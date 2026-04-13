@@ -4,367 +4,315 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>English Tenses Quiz</title>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
 <style>
-  :root {
-    --bg:#F7F5F0;--surface:#FFFFFF;--surface2:#F0EDE6;
-    --text:#1A1814;--text2:#6B6558;--text3:#9E9891;
-    --blue:#1B4F8A;--blue-light:#E8F0FB;--blue-mid:#3A7BD5;
-    --green:#2D6A4F;--green-light:#D8F3DC;
-    --red:#9B2226;--red-light:#FFE8E8;
-    --gold:#B5881C;--gold-light:#FEF7E0;
-    --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);
-    --radius:12px;--radius-sm:8px;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-
-  .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-  .logo{font-family:'Lora',serif;font-size:18px;font-weight:600;}
-  .logo span{color:var(--blue-mid);}
-  .score-pills{display:flex;gap:8px;}
-  .pill{padding:4px 14px;border-radius:99px;font-size:13px;font-weight:500;border:1px solid var(--border2);background:var(--surface);}
-  .pill.correct{background:var(--green-light);color:var(--green);border-color:#74C69D;}
-  .pill.wrong{background:var(--red-light);color:var(--red);border-color:#F4A7A9;}
-  .pill.pct{background:var(--gold-light);color:var(--gold);border-color:#F0C040;}
-
-  .main{max-width:720px;margin:0 auto;padding:2.5rem 1.5rem 4rem;}
-  .group-wrap{display:flex;flex-direction:column;gap:1.25rem;margin-bottom:1.75rem;}
-  .group-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;padding-left:2px;}
-  .tense-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;}
-  .tense-btn{padding:10px 14px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;text-align:left;line-height:1.4;}
-  .tense-btn:hover{background:var(--surface2);}
-  .tense-btn.active{background:var(--blue-light);border:2px solid var(--blue-mid);color:var(--blue);}
-  .tense-btn .tn{display:block;font-size:10px;font-weight:600;letter-spacing:.06em;color:var(--text3);margin-bottom:2px;}
-  .tense-btn.active .tn{color:var(--blue-mid);}
-
-  .random-btn{padding:9px 16px;border:1.5px dashed var(--border2);border-radius:var(--radius-sm);background:transparent;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;width:100%;margin-bottom:1.5rem;}
-  .random-btn:hover{background:var(--surface2);}
-
-  .progress-bar{height:3px;background:var(--border);border-radius:99px;margin-bottom:1.5rem;overflow:hidden;}
-  .progress-fill{height:100%;background:var(--blue-mid);border-radius:99px;transition:width .4s ease;}
-
-  .quiz-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem;margin-bottom:1rem;}
-  .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;}
-  .tense-badge{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--blue);background:var(--blue-light);border-radius:99px;padding:4px 12px;}
-  .q-counter{font-size:13px;color:var(--text3);}
-  .structure-box{font-family:'Courier New',monospace;font-size:12px;color:var(--text2);background:var(--surface2);border-radius:var(--radius-sm);padding:7px 12px;margin-bottom:1.25rem;}
-  .question-text{font-family:'Lora',serif;font-size:19px;color:var(--text);line-height:1.65;margin-bottom:.5rem;}
-  .blank-word{display:inline-block;min-width:90px;border-bottom:2.5px solid var(--blue-mid);padding:0 6px;color:transparent;vertical-align:bottom;}
-  .hint{font-size:13px;color:var(--text3);margin-bottom:1.25rem;font-style:italic;}
-
-  .input-row{display:flex;gap:8px;}
-  .ans-input{flex:1;padding:10px 14px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:15px;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);transition:border .15s,box-shadow .15s;}
-  .ans-input:focus{outline:none;border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(58,123,213,.15);}
-  .ans-input:disabled{opacity:.6;}
-  .check-btn{padding:10px 22px;border:none;border-radius:var(--radius-sm);background:var(--blue);color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s,transform .1s;}
-  .check-btn:hover{background:var(--blue-mid);}
-  .check-btn:active{transform:scale(.97);}
-  .check-btn:disabled{opacity:.4;cursor:default;}
-
-  .feedback{margin-top:14px;padding:12px 16px;border-radius:var(--radius-sm);font-size:14px;line-height:1.65;animation:fadeIn .2s ease;}
-  .feedback.correct{background:var(--green-light);color:var(--green);border:1px solid #74C69D;}
-  .feedback.wrong{background:var(--red-light);color:var(--red);border:1px solid #F4A7A9;}
-  .correct-ans{font-weight:600;font-family:'Lora',serif;}
-  .expl{margin-top:6px;font-size:13px;opacity:.85;}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-
-  .next-btn{width:100%;padding:11px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:background .15s;display:none;}
-  .next-btn:hover{background:var(--surface2);}
-
-  .start-hint{text-align:center;padding:3rem 0;color:var(--text3);font-size:15px;}
-  .start-hint .arrow{font-size:24px;display:block;margin-bottom:8px;}
-
-  @media(max-width:520px){
-    .topbar{padding:0 1rem;}
-    .score-pills .pill:last-child{display:none;}
-    .main{padding:1.5rem 1rem 4rem;}
-    .tense-grid{grid-template-columns:1fr 1fr;}
-    .question-text{font-size:16px;}
-  }
+:root{--bg:#F7F5F0;--surface:#FFF;--s2:#F0EDE6;--text:#1A1814;--t2:#6B6558;--t3:#9E9891;--blue:#1B4F8A;--blu:#E8F0FB;--blum:#3A7BD5;--green:#2D6A4F;--gl:#D8F3DC;--red:#9B2226;--rl:#FFE8E8;--gold:#B5881C;--gol:#FEF7E0;--bo:rgba(0,0,0,.08);--bo2:rgba(0,0,0,.14);--r:12px;--rs:8px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--bo);padding:0 1.5rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.logo{font-family:'Lora',serif;font-size:18px;font-weight:600;}
+.logo span{color:var(--blum);}
+.pills{display:flex;gap:8px;}
+.pill{padding:4px 12px;border-radius:99px;font-size:13px;font-weight:500;border:1px solid var(--bo2);background:var(--surface);}
+.pill.c{background:var(--gl);color:var(--green);border-color:#74C69D;}
+.pill.w{background:var(--rl);color:var(--red);border-color:#F4A7A9;}
+.pill.p{background:var(--gol);color:var(--gold);border-color:#F0C040;}
+.main{max-width:720px;margin:0 auto;padding:2rem 1.25rem 4rem;}
+.groups{display:flex;flex-direction:column;gap:1.25rem;margin-bottom:1.5rem;}
+.glabel{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:8px;padding-left:2px;}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:8px;}
+.tbtn{padding:9px 12px;border:1px solid var(--bo2);border-radius:var(--rs);background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;text-align:left;line-height:1.4;}
+.tbtn:hover{background:var(--s2);}
+.tbtn.active{background:var(--blu);border:2px solid var(--blum);color:var(--blue);}
+.tbtn .tn{display:block;font-size:10px;font-weight:600;letter-spacing:.06em;color:var(--t3);margin-bottom:2px;}
+.tbtn.active .tn{color:var(--blum);}
+.rnd{padding:9px;border:1.5px dashed var(--bo2);border-radius:var(--rs);background:transparent;color:var(--t2);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;width:100%;margin-bottom:1.25rem;transition:background .15s;}
+.rnd:hover{background:var(--s2);}
+.pbar{height:3px;background:var(--bo);border-radius:99px;margin-bottom:1.25rem;overflow:hidden;}
+.pfill{height:100%;background:var(--blum);border-radius:99px;transition:width .4s;}
+.card{background:var(--surface);border:1px solid var(--bo);border-radius:var(--r);padding:1.5rem;margin-bottom:1rem;}
+.ctop{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;}
+.badge{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--blue);background:var(--blu);border-radius:99px;padding:4px 12px;}
+.qn{font-size:13px;color:var(--t3);}
+.sbox{font-family:'Courier New',monospace;font-size:12px;color:var(--t2);background:var(--s2);border-radius:var(--rs);padding:6px 11px;margin-bottom:1.1rem;}
+.qtext{font-family:'Lora',serif;font-size:19px;line-height:1.65;margin-bottom:.4rem;}
+.blank{display:inline-block;min-width:80px;border-bottom:2.5px solid var(--blum);padding:0 4px;color:transparent;vertical-align:bottom;}
+.vref{font-size:13px;color:var(--t3);margin-bottom:1.1rem;font-style:italic;}
+.vref strong{font-style:normal;color:var(--t2);font-weight:500;}
+.irow{display:flex;gap:8px;}
+.ainp{flex:1;padding:9px 13px;border:1px solid var(--bo2);border-radius:var(--rs);font-size:15px;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);transition:border .15s,box-shadow .15s;}
+.ainp:focus{outline:none;border-color:var(--blum);box-shadow:0 0 0 3px rgba(58,123,213,.15);}
+.ainp:disabled{opacity:.6;}
+.ckbtn{padding:9px 20px;border:none;border-radius:var(--rs);background:var(--blue);color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s,transform .1s;white-space:nowrap;}
+.ckbtn:hover{background:var(--blum);}
+.ckbtn:active{transform:scale(.97);}
+.ckbtn:disabled{opacity:.4;cursor:default;}
+.fb{margin-top:12px;padding:11px 14px;border-radius:var(--rs);font-size:14px;line-height:1.65;animation:fin .2s ease;}
+.fb.ok{background:var(--gl);color:var(--green);border:1px solid #74C69D;}
+.fb.no{background:var(--rl);color:var(--red);border:1px solid #F4A7A9;}
+.cans{font-weight:600;font-family:'Lora',serif;}
+.expl{margin-top:5px;font-size:13px;opacity:.85;}
+@keyframes fin{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.nxtbtn{width:100%;padding:10px;border:1px solid var(--bo2);border-radius:var(--rs);background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:background .15s;display:none;}
+.nxtbtn:hover{background:var(--s2);}
+.hint0{text-align:center;padding:3rem 0;color:var(--t3);font-size:15px;}
+.hint0 .ar{font-size:22px;display:block;margin-bottom:8px;}
+@media(max-width:520px){.topbar{padding:0 1rem;}.tgrid{grid-template-columns:1fr 1fr;}.qtext{font-size:16px;}.pill.p{display:none;}}
 </style>
 </head>
 <body>
 <div class="topbar">
   <div class="logo">English<span>Tenses</span></div>
-  <div class="score-pills">
-    <div class="pill correct" id="s-correct">✓ 0</div>
-    <div class="pill wrong" id="s-wrong">✗ 0</div>
-    <div class="pill pct" id="s-pct">— %</div>
+  <div class="pills">
+    <div class="pill c" id="sc">✓ 0</div>
+    <div class="pill w" id="sw">✗ 0</div>
+    <div class="pill p" id="sp2">— %</div>
   </div>
 </div>
-
 <div class="main">
-  <div class="group-wrap" id="groups"></div>
-  <button class="random-btn" onclick="randomTense()">🎲 Random tense</button>
-  <div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%"></div></div>
-  <div id="quiz-area"><div class="start-hint"><span class="arrow">☝️</span>Pick a tense above to start practicing</div></div>
+  <div class="groups" id="groups"></div>
+  <button class="rnd" onclick="rndTense()">🎲 Random tense</button>
+  <div class="pbar"><div class="pfill" id="prog" style="width:0%"></div></div>
+  <div id="qa"><div class="hint0"><span class="ar">☝️</span>Pick a tense above to start</div></div>
 </div>
 
 <script>
-const GROUPS=[
-  {label:"Present tenses",tenses:[
-    {id:"sp",  label:"Present Simple",            structure:"Subject + V1  (he/she/it → V1+s/es)"},
-    {id:"pc",  label:"Present Continuous",        structure:"Subject + am/is/are + V-ing"},
-    {id:"pp",  label:"Present Perfect",           structure:"Subject + have/has + V3"},
-    {id:"ppc", label:"Present Perfect Continuous",structure:"Subject + have/has been + V-ing"},
-  ]},
-  {label:"Past tenses",tenses:[
-    {id:"past",label:"Past Simple",               structure:"Subject + V2  (regular → V+ed)"},
-    {id:"pac", label:"Past Continuous",           structure:"Subject + was/were + V-ing"},
-    {id:"pap", label:"Past Perfect",              structure:"Subject + had + V3"},
-    {id:"papc",label:"Past Perfect Continuous",   structure:"Subject + had been + V-ing"},
-  ]},
-  {label:"Future tenses",tenses:[
-    {id:"fw",  label:"Future Simple (will)",      structure:"Subject + will + V1"},
-    {id:"fg",  label:"Going to (future)",         structure:"Subject + am/is/are + going to + V1"},
-    {id:"fc",  label:"Future Continuous",         structure:"Subject + will be + V-ing"},
-    {id:"fp",  label:"Future Perfect",            structure:"Subject + will have + V3"},
-  ]},
+// ── VERB DATA (from Verbos_Irregulares.xlsx) ─────────────────────────────────
+const VERBS = [{"base":"become","past":"became","past_norm":"became","participle":"become","spanish":"convertirse","ing":"becoming","s3":"becomes","type":"irregular"},{"base":"begin","past":"began","past_norm":"began","participle":"begun","spanish":"empezar","ing":"beginning","s3":"begins","type":"irregular"},{"base":"bend","past":"bent","past_norm":"bent","participle":"bent","spanish":"doblar","ing":"bending","s3":"bends","type":"irregular"},{"base":"bet","past":"bet","past_norm":"bet","participle":"bet","spanish":"apostar","ing":"betting","s3":"bets","type":"irregular"},{"base":"bite","past":"bit","past_norm":"bit","participle":"bitten","spanish":"morder","ing":"biting","s3":"bites","type":"irregular"},{"base":"blow","past":"blew","past_norm":"blew","participle":"blown","spanish":"soplar","ing":"blowing","s3":"blows","type":"irregular"},{"base":"break","past":"broke","past_norm":"broke","participle":"broken","spanish":"romper","ing":"breaking","s3":"breaks","type":"irregular"},{"base":"bring","past":"brought","past_norm":"brought","participle":"brought","spanish":"traer","ing":"bringing","s3":"brings","type":"irregular"},{"base":"build","past":"built","past_norm":"built","participle":"built","spanish":"construir","ing":"building","s3":"builds","type":"irregular"},{"base":"buy","past":"bought","past_norm":"bought","participle":"bought","spanish":"comprar","ing":"buying","s3":"buys","type":"irregular"},{"base":"catch","past":"caught","past_norm":"caught","participle":"caught","spanish":"atrapar","ing":"catching","s3":"catches","type":"irregular"},{"base":"choose","past":"chose","past_norm":"chose","participle":"chosen","spanish":"elegir","ing":"choosing","s3":"chooses","type":"irregular"},{"base":"come","past":"came","past_norm":"came","participle":"come","spanish":"venir","ing":"coming","s3":"comes","type":"irregular"},{"base":"cost","past":"cost","past_norm":"cost","participle":"cost","spanish":"costar","ing":"costing","s3":"costs","type":"irregular"},{"base":"cut","past":"cut","past_norm":"cut","participle":"cut","spanish":"cortar","ing":"cutting","s3":"cuts","type":"irregular"},{"base":"do","past":"did","past_norm":"did","participle":"done","spanish":"hacer","ing":"doing","s3":"does","type":"irregular"},{"base":"draw","past":"drew","past_norm":"drew","participle":"drawn","spanish":"dibujar","ing":"drawing","s3":"draws","type":"irregular"},{"base":"dream","past":"dreamed","past_norm":"dreamed","participle":"dreamed","spanish":"soñar","ing":"dreaming","s3":"dreams","type":"irregular"},{"base":"drink","past":"drank","past_norm":"drank","participle":"drunk","spanish":"beber","ing":"drinking","s3":"drinks","type":"irregular"},{"base":"drive","past":"drove","past_norm":"drove","participle":"driven","spanish":"conducir","ing":"driving","s3":"drives","type":"irregular"},{"base":"eat","past":"ate","past_norm":"ate","participle":"eaten","spanish":"comer","ing":"eating","s3":"eats","type":"irregular"},{"base":"fall","past":"fell","past_norm":"fell","participle":"fallen","spanish":"caer","ing":"falling","s3":"falls","type":"irregular"},{"base":"feel","past":"felt","past_norm":"felt","participle":"felt","spanish":"sentir","ing":"feeling","s3":"feels","type":"irregular"},{"base":"fight","past":"fought","past_norm":"fought","participle":"fought","spanish":"pelear","ing":"fighting","s3":"fights","type":"irregular"},{"base":"find","past":"found","past_norm":"found","participle":"found","spanish":"encontrar","ing":"finding","s3":"finds","type":"irregular"},{"base":"fly","past":"flew","past_norm":"flew","participle":"flown","spanish":"volar","ing":"flying","s3":"flies","type":"irregular"},{"base":"forget","past":"forgot","past_norm":"forgot","participle":"forgotten","spanish":"olvidar","ing":"forgetting","s3":"forgets","type":"irregular"},{"base":"forgive","past":"forgave","past_norm":"forgave","participle":"forgiven","spanish":"perdonar","ing":"forgiving","s3":"forgives","type":"irregular"},{"base":"freeze","past":"froze","past_norm":"froze","participle":"frozen","spanish":"congelar","ing":"freezing","s3":"freezes","type":"irregular"},{"base":"get","past":"got","past_norm":"got","participle":"gotten","spanish":"obtener","ing":"getting","s3":"gets","type":"irregular"},{"base":"give","past":"gave","past_norm":"gave","participle":"given","spanish":"dar","ing":"giving","s3":"gives","type":"irregular"},{"base":"go","past":"went","past_norm":"went","participle":"gone","spanish":"ir","ing":"going","s3":"goes","type":"irregular"},{"base":"grow","past":"grew","past_norm":"grew","participle":"grown","spanish":"crecer","ing":"growing","s3":"grows","type":"irregular"},{"base":"hang","past":"hung","past_norm":"hung","participle":"hung","spanish":"colgar","ing":"hanging","s3":"hangs","type":"irregular"},{"base":"have","past":"had","past_norm":"had","participle":"had","spanish":"tener","ing":"having","s3":"has","type":"irregular"},{"base":"hear","past":"heard","past_norm":"heard","participle":"heard","spanish":"escuchar","ing":"hearing","s3":"hears","type":"irregular"},{"base":"hide","past":"hid","past_norm":"hid","participle":"hidden","spanish":"esconder","ing":"hiding","s3":"hides","type":"irregular"},{"base":"hit","past":"hit","past_norm":"hit","participle":"hit","spanish":"golpear","ing":"hitting","s3":"hits","type":"irregular"},{"base":"hold","past":"held","past_norm":"held","participle":"held","spanish":"sostener","ing":"holding","s3":"holds","type":"irregular"},{"base":"hurt","past":"hurt","past_norm":"hurt","participle":"hurt","spanish":"herir","ing":"hurting","s3":"hurts","type":"irregular"},{"base":"keep","past":"kept","past_norm":"kept","participle":"kept","spanish":"mantener","ing":"keeping","s3":"keeps","type":"irregular"},{"base":"know","past":"knew","past_norm":"knew","participle":"known","spanish":"saber","ing":"knowing","s3":"knows","type":"irregular"},{"base":"lay","past":"laid","past_norm":"laid","participle":"laid","spanish":"poner","ing":"laying","s3":"lays","type":"irregular"},{"base":"lead","past":"led","past_norm":"led","participle":"led","spanish":"liderar","ing":"leading","s3":"leads","type":"irregular"},{"base":"learn","past":"learned","past_norm":"learned","participle":"learned","spanish":"aprender","ing":"learning","s3":"learns","type":"irregular"},{"base":"leave","past":"left","past_norm":"left","participle":"left","spanish":"dejar","ing":"leaving","s3":"leaves","type":"irregular"},{"base":"lend","past":"lent","past_norm":"lent","participle":"lent","spanish":"prestar","ing":"lending","s3":"lends","type":"irregular"},{"base":"let","past":"let","past_norm":"let","participle":"let","spanish":"permitir","ing":"letting","s3":"lets","type":"irregular"},{"base":"lose","past":"lost","past_norm":"lost","participle":"lost","spanish":"perder","ing":"losing","s3":"loses","type":"irregular"},{"base":"make","past":"made","past_norm":"made","participle":"made","spanish":"hacer","ing":"making","s3":"makes","type":"irregular"},{"base":"mean","past":"meant","past_norm":"meant","participle":"meant","spanish":"significar","ing":"meaning","s3":"means","type":"irregular"},{"base":"meet","past":"met","past_norm":"met","participle":"met","spanish":"conocer","ing":"meeting","s3":"meets","type":"irregular"},{"base":"pay","past":"paid","past_norm":"paid","participle":"paid","spanish":"pagar","ing":"paying","s3":"pays","type":"irregular"},{"base":"put","past":"put","past_norm":"put","participle":"put","spanish":"poner","ing":"putting","s3":"puts","type":"irregular"},{"base":"read","past":"read","past_norm":"read","participle":"read","spanish":"leer","ing":"reading","s3":"reads","type":"irregular"},{"base":"ride","past":"rode","past_norm":"rode","participle":"ridden","spanish":"montar","ing":"riding","s3":"rides","type":"irregular"},{"base":"ring","past":"rang","past_norm":"rang","participle":"rung","spanish":"sonar","ing":"ringing","s3":"rings","type":"irregular"},{"base":"rise","past":"rose","past_norm":"rose","participle":"risen","spanish":"subir","ing":"rising","s3":"rises","type":"irregular"},{"base":"run","past":"ran","past_norm":"ran","participle":"run","spanish":"correr","ing":"running","s3":"runs","type":"irregular"},{"base":"say","past":"said","past_norm":"said","participle":"said","spanish":"decir","ing":"saying","s3":"says","type":"irregular"},{"base":"see","past":"saw","past_norm":"saw","participle":"seen","spanish":"ver","ing":"seeing","s3":"sees","type":"irregular"},{"base":"sell","past":"sold","past_norm":"sold","participle":"sold","spanish":"vender","ing":"selling","s3":"sells","type":"irregular"},{"base":"send","past":"sent","past_norm":"sent","participle":"sent","spanish":"enviar","ing":"sending","s3":"sends","type":"irregular"},{"base":"set","past":"set","past_norm":"set","participle":"set","spanish":"establecer","ing":"setting","s3":"sets","type":"irregular"},{"base":"shake","past":"shook","past_norm":"shook","participle":"shaken","spanish":"sacudir","ing":"shaking","s3":"shakes","type":"irregular"},{"base":"shine","past":"shone","past_norm":"shone","participle":"shone","spanish":"brillar","ing":"shining","s3":"shines","type":"irregular"},{"base":"shoot","past":"shot","past_norm":"shot","participle":"shot","spanish":"disparar","ing":"shooting","s3":"shoots","type":"irregular"},{"base":"show","past":"showed","past_norm":"showed","participle":"shown","spanish":"mostrar","ing":"showing","s3":"shows","type":"irregular"},{"base":"shut","past":"shut","past_norm":"shut","participle":"shut","spanish":"cerrar","ing":"shutting","s3":"shuts","type":"irregular"},{"base":"sing","past":"sang","past_norm":"sang","participle":"sung","spanish":"cantar","ing":"singing","s3":"sings","type":"irregular"},{"base":"sit","past":"sat","past_norm":"sat","participle":"sat","spanish":"sentarse","ing":"sitting","s3":"sits","type":"irregular"},{"base":"sleep","past":"slept","past_norm":"slept","participle":"slept","spanish":"dormir","ing":"sleeping","s3":"sleeps","type":"irregular"},{"base":"speak","past":"spoke","past_norm":"spoke","participle":"spoken","spanish":"hablar","ing":"speaking","s3":"speaks","type":"irregular"},{"base":"spend","past":"spent","past_norm":"spent","participle":"spent","spanish":"gastar","ing":"spending","s3":"spends","type":"irregular"},{"base":"stand","past":"stood","past_norm":"stood","participle":"stood","spanish":"estar de pie","ing":"standing","s3":"stands","type":"irregular"},{"base":"steal","past":"stole","past_norm":"stole","participle":"stolen","spanish":"robar","ing":"stealing","s3":"steals","type":"irregular"},{"base":"stick","past":"stuck","past_norm":"stuck","participle":"stuck","spanish":"pegar","ing":"sticking","s3":"sticks","type":"irregular"},{"base":"swim","past":"swam","past_norm":"swam","participle":"swum","spanish":"nadar","ing":"swimming","s3":"swims","type":"irregular"},{"base":"take","past":"took","past_norm":"took","participle":"taken","spanish":"tomar","ing":"taking","s3":"takes","type":"irregular"},{"base":"teach","past":"taught","past_norm":"taught","participle":"taught","spanish":"enseñar","ing":"teaching","s3":"teaches","type":"irregular"},{"base":"tell","past":"told","past_norm":"told","participle":"told","spanish":"decir","ing":"telling","s3":"tells","type":"irregular"},{"base":"think","past":"thought","past_norm":"thought","participle":"thought","spanish":"pensar","ing":"thinking","s3":"thinks","type":"irregular"},{"base":"throw","past":"threw","past_norm":"threw","participle":"thrown","spanish":"lanzar","ing":"throwing","s3":"throws","type":"irregular"},{"base":"understand","past":"understood","past_norm":"understood","participle":"understood","spanish":"entender","ing":"understanding","s3":"understands","type":"irregular"},{"base":"wake","past":"woke","past_norm":"woke","participle":"woken","spanish":"despertar","ing":"waking","s3":"wakes","type":"irregular"},{"base":"wear","past":"wore","past_norm":"wore","participle":"worn","spanish":"usar ropa","ing":"wearing","s3":"wears","type":"irregular"},{"base":"win","past":"won","past_norm":"won","participle":"won","spanish":"ganar","ing":"winning","s3":"wins","type":"irregular"},{"base":"write","past":"wrote","past_norm":"wrote","participle":"written","spanish":"escribir","ing":"writing","s3":"writes","type":"irregular"},{"base":"argue","past":"argued","past_norm":"argued","participle":"argued","spanish":"discutir","ing":"arguing","s3":"argues","type":"regular"},{"base":"ask","past":"asked","past_norm":"asked","participle":"asked","spanish":"preguntar","ing":"asking","s3":"asks","type":"regular"},{"base":"believe","past":"believed","past_norm":"believed","participle":"believed","spanish":"creer","ing":"believing","s3":"believes","type":"regular"},{"base":"call","past":"called","past_norm":"called","participle":"called","spanish":"llamar","ing":"calling","s3":"calls","type":"regular"},{"base":"change","past":"changed","past_norm":"changed","participle":"changed","spanish":"cambiar","ing":"changing","s3":"changes","type":"regular"},{"base":"clean","past":"cleaned","past_norm":"cleaned","participle":"cleaned","spanish":"limpiar","ing":"cleaning","s3":"cleans","type":"regular"},{"base":"climb","past":"climbed","past_norm":"climbed","participle":"climbed","spanish":"trepar","ing":"climbing","s3":"climbs","type":"regular"},{"base":"continue","past":"continued","past_norm":"continued","participle":"continued","spanish":"continuar","ing":"continuing","s3":"continues","type":"regular"},{"base":"cook","past":"cooked","past_norm":"cooked","participle":"cooked","spanish":"cocinar","ing":"cooking","s3":"cooks","type":"regular"},{"base":"cry","past":"cried","past_norm":"cried","participle":"cried","spanish":"llorar/gritar","ing":"crying","s3":"cries","type":"regular"},{"base":"decide","past":"decided","past_norm":"decided","participle":"decided","spanish":"decidir","ing":"deciding","s3":"decides","type":"regular"},{"base":"die","past":"died","past_norm":"died","participle":"died","spanish":"morir","ing":"dying","s3":"dies","type":"regular"},{"base":"drop","past":"dropped","past_norm":"dropped","participle":"dropped","spanish":"caer","ing":"dropping","s3":"drops","type":"regular"},{"base":"dry","past":"dried","past_norm":"dried","participle":"dried","spanish":"secar","ing":"drying","s3":"dries","type":"regular"},{"base":"enjoy","past":"enjoyed","past_norm":"enjoyed","participle":"enjoyed","spanish":"disfrutar","ing":"enjoying","s3":"enjoys","type":"regular"},{"base":"finish","past":"finished","past_norm":"finished","participle":"finished","spanish":"terminar","ing":"finishing","s3":"finishes","type":"regular"},{"base":"hate","past":"hated","past_norm":"hated","participle":"hated","spanish":"odiar","ing":"hating","s3":"hates","type":"regular"},{"base":"help","past":"helped","past_norm":"helped","participle":"helped","spanish":"ayudar","ing":"helping","s3":"helps","type":"regular"},{"base":"invite","past":"invited","past_norm":"invited","participle":"invited","spanish":"invitar","ing":"inviting","s3":"invites","type":"regular"},{"base":"join","past":"joined","past_norm":"joined","participle":"joined","spanish":"unir","ing":"joining","s3":"joins","type":"regular"},{"base":"jump","past":"jumped","past_norm":"jumped","participle":"jumped","spanish":"saltar","ing":"jumping","s3":"jumps","type":"regular"},{"base":"kick","past":"kicked","past_norm":"kicked","participle":"kicked","spanish":"patear","ing":"kicking","s3":"kicks","type":"regular"},{"base":"kill","past":"killed","past_norm":"killed","participle":"killed","spanish":"matar","ing":"killing","s3":"kills","type":"regular"},{"base":"kiss","past":"kissed","past_norm":"kissed","participle":"kissed","spanish":"besar","ing":"kissing","s3":"kisses","type":"regular"},{"base":"laugh","past":"laughed","past_norm":"laughed","participle":"laughed","spanish":"reír","ing":"laughing","s3":"laughs","type":"regular"},{"base":"like","past":"liked","past_norm":"liked","participle":"liked","spanish":"gustar","ing":"liking","s3":"likes","type":"regular"},{"base":"live","past":"lived","past_norm":"lived","participle":"lived","spanish":"vivir","ing":"living","s3":"lives","type":"regular"},{"base":"look","past":"looked","past_norm":"looked","participle":"looked","spanish":"mirar","ing":"looking","s3":"looks","type":"regular"},{"base":"love","past":"loved","past_norm":"loved","participle":"loved","spanish":"amar","ing":"loving","s3":"loves","type":"regular"},{"base":"marry","past":"married","past_norm":"married","participle":"married","spanish":"casar","ing":"marrying","s3":"marries","type":"regular"},{"base":"mix","past":"mixed","past_norm":"mixed","participle":"mixed","spanish":"mezclar","ing":"mixing","s3":"mixes","type":"regular"},{"base":"move","past":"moved","past_norm":"moved","participle":"moved","spanish":"mover","ing":"moving","s3":"moves","type":"regular"},{"base":"melt","past":"melted","past_norm":"melted","participle":"melted","spanish":"derretir","ing":"melting","s3":"melts","type":"regular"},{"base":"miss","past":"missed","past_norm":"missed","participle":"missed","spanish":"extrañar","ing":"missing","s3":"misses","type":"regular"},{"base":"need","past":"needed","past_norm":"needed","participle":"needed","spanish":"necesitar","ing":"needing","s3":"needs","type":"regular"},{"base":"open","past":"opened","past_norm":"opened","participle":"opened","spanish":"abrir","ing":"opening","s3":"opens","type":"regular"},{"base":"pass","past":"passed","past_norm":"passed","participle":"passed","spanish":"pasar","ing":"passing","s3":"passes","type":"regular"},{"base":"play","past":"played","past_norm":"played","participle":"played","spanish":"jugar","ing":"playing","s3":"plays","type":"regular"},{"base":"promise","past":"promised","past_norm":"promised","participle":"promised","spanish":"prometer","ing":"promising","s3":"promises","type":"regular"},{"base":"remember","past":"remembered","past_norm":"remembered","participle":"remembered","spanish":"recordar","ing":"remembering","s3":"remembers","type":"regular"},{"base":"return","past":"returned","past_norm":"returned","participle":"returned","spanish":"devolver","ing":"returning","s3":"returns","type":"regular"},{"base":"shout","past":"shouted","past_norm":"shouted","participle":"shouted","spanish":"gritar","ing":"shouting","s3":"shouts","type":"regular"},{"base":"smell","past":"smelled","past_norm":"smelled","participle":"smelled","spanish":"oler","ing":"smelling","s3":"smells","type":"regular"},{"base":"smile","past":"smiled","past_norm":"smiled","participle":"smiled","spanish":"sonreír","ing":"smiling","s3":"smiles","type":"regular"},{"base":"spell","past":"spelled","past_norm":"spelled","participle":"spelled","spanish":"deletrear","ing":"spelling","s3":"spells","type":"regular"},{"base":"start","past":"started","past_norm":"started","participle":"started","spanish":"empezar","ing":"starting","s3":"starts","type":"regular"},{"base":"stay","past":"stayed","past_norm":"stayed","participle":"stayed","spanish":"quedar","ing":"staying","s3":"stays","type":"regular"},{"base":"stop","past":"stopped","past_norm":"stopped","participle":"stopped","spanish":"parar","ing":"stopping","s3":"stops","type":"regular"},{"base":"study","past":"studied","past_norm":"studied","participle":"studied","spanish":"estudiar","ing":"studying","s3":"studies","type":"regular"},{"base":"talk","past":"talked","past_norm":"talked","participle":"talked","spanish":"hablar","ing":"talking","s3":"talks","type":"regular"},{"base":"touch","past":"touched","past_norm":"touched","participle":"touched","spanish":"tocar","ing":"touching","s3":"touches","type":"regular"},{"base":"travel","past":"traveled","past_norm":"traveled","participle":"traveled","spanish":"viajar","ing":"traveling","s3":"travels","type":"regular"},{"base":"try","past":"tried","past_norm":"tried","participle":"tried","spanish":"probar","ing":"trying","s3":"tries","type":"regular"},{"base":"turn","past":"turned","past_norm":"turned","participle":"turned","spanish":"girar","ing":"turning","s3":"turns","type":"regular"},{"base":"use","past":"used","past_norm":"used","participle":"used","spanish":"usar","ing":"using","s3":"uses","type":"regular"},{"base":"want","past":"wanted","past_norm":"wanted","participle":"wanted","spanish":"querer","ing":"wanting","s3":"wants","type":"regular"},{"base":"watch","past":"watched","past_norm":"watched","participle":"watched","spanish":"ver","ing":"watching","s3":"watches","type":"regular"},{"base":"wish","past":"wished","past_norm":"wished","participle":"wished","spanish":"desear","ing":"wishing","s3":"wishes","type":"regular"},{"base":"work","past":"worked","past_norm":"worked","participle":"worked","spanish":"trabajar","ing":"working","s3":"works","type":"regular"}];
+
+// ── TENSE CONFIG ──────────────────────────────────────────────────────────────
+// Each template: { s: sentence (use ___ for blank, {sp} for Spanish),
+//                  ans: fn(v)=>string, hint: string, expl: fn(v)=>string }
+const TENSES = [
+  { id:'sp', label:'Present Simple', structure:'Subject + V1  (he/she/it → V1+s/es)',
+    templates:[
+      { s:'I usually ___ ({sp}) every day.',       ans:v=>v.base,   hint:'Habitual action (subject: I)',      expl:v=>`'${v.base}' is the base form used with I/you/we/they for habits and routines.` },
+      { s:'She ___ ({sp}) all the time.',           ans:v=>v.s3,    hint:'Routine of a third person (she)',   expl:v=>`Third person singular adds -s/es: ${v.base} → ${v.s3}.` },
+      { s:'They ___ ({sp}) a lot.',                 ans:v=>v.base,  hint:'Frequent action (subject: they)',   expl:v=>`Plural subject (they) takes the base form: ${v.base}.` },
+      { s:'He ___ ({sp}) at his job every day.',    ans:v=>v.s3,    hint:'Regular activity of someone (he)',  expl:v=>`Third person singular: ${v.base} → ${v.s3}.` },
+      { s:'My parents ___ ({sp}) every weekend.',   ans:v=>v.base,  hint:'Family routine (subject: they)',    expl:v=>`Plural subject (my parents) takes the base form: ${v.base}.` },
+    ]},
+  { id:'pc', label:'Present Continuous', structure:'Subject + am/is/are + V-ing',
+    templates:[
+      { s:'Right now, I ___ ({sp}).',               ans:v=>`am ${v.ing}`,  hint:'Action happening at this moment (I)',    expl:v=>`Present continuous: I + am + V-ing → am ${v.ing}.` },
+      { s:'She ___ ({sp}) at the moment.',          ans:v=>`is ${v.ing}`,  hint:'In progress right now (she)',            expl:v=>`Present continuous: she + is + V-ing → is ${v.ing}.` },
+      { s:'They ___ ({sp}) right now.',             ans:v=>`are ${v.ing}`, hint:'Ongoing action (subject: they)',          expl:v=>`Present continuous: they + are + V-ing → are ${v.ing}.` },
+      { s:'Look! He ___ ({sp}).',                   ans:v=>`is ${v.ing}`,  hint:'Something visible happening now (he)',   expl:v=>`is + V-ing describes an action in progress: is ${v.ing}.` },
+      { s:'We ___ ({sp}) this week.',               ans:v=>`are ${v.ing}`, hint:'Temporary activity around now (we)',      expl:v=>`are + V-ing for a temporary activity: are ${v.ing}.` },
+    ]},
+  { id:'pp', label:'Present Perfect', structure:'Subject + have/has + V3 (past participle)',
+    templates:[
+      { s:'I ___ ({sp}) many times.',               ans:v=>`have ${v.participle}`, hint:'Life experience (subject: I)',           expl:v=>`Present perfect: have + past participle → have ${v.participle}.` },
+      { s:'She ___ ({sp}) already.',                ans:v=>`has ${v.participle}`,  hint:'Completed action with present result',   expl:v=>`has + past participle: has ${v.participle}.` },
+      { s:'They ___ ({sp}) recently.',              ans:v=>`have ${v.participle}`, hint:'Recent past action (they)',               expl:v=>`have + past participle: have ${v.participle}.` },
+      { s:'He never ___ ({sp}) before.',            ans:v=>`has ${v.participle}`,  hint:'Zero experience up to now (he)',         expl:v=>`has + past participle for past experience: has ${v.participle}.` },
+      { s:'We ___ just ___ ({sp}).',                ans:v=>`have / ${v.participle}`,hint:"'Just' signals very recent action",     expl:v=>`have + just + past participle: have just ${v.participle}.` },
+    ]},
+  { id:'ppc', label:'Present Perfect Continuous', structure:'Subject + have/has been + V-ing',
+    templates:[
+      { s:'I ___ ({sp}) for two hours.',            ans:v=>`have been ${v.ing}`, hint:'Duration of an ongoing activity (I)',     expl:v=>`have been + V-ing shows duration: have been ${v.ing}.` },
+      { s:'She ___ ({sp}) all morning.',            ans:v=>`has been ${v.ing}`,  hint:'Activity in progress, still ongoing',     expl:v=>`has been + V-ing: has been ${v.ing}.` },
+      { s:'They ___ ({sp}) since 9 am.',            ans:v=>`have been ${v.ing}`, hint:"'Since' = start point of an activity",    expl:v=>`have been + V-ing for duration since a start point: have been ${v.ing}.` },
+      { s:'He ___ ({sp}) all week.',                ans:v=>`has been ${v.ing}`,  hint:'Sustained effort this week (he)',         expl:v=>`has been + V-ing: has been ${v.ing}.` },
+      { s:'We ___ ({sp}) for months now.',          ans:v=>`have been ${v.ing}`, hint:'Ongoing situation for a long time',       expl:v=>`have been + V-ing for long duration: have been ${v.ing}.` },
+    ]},
+  { id:'past', label:'Past Simple', structure:'Subject + V2  (regular → V+ed, irregular → V2)',
+    templates:[
+      { s:'I ___ ({sp}) yesterday.',                ans:v=>v.past,      hint:'Completed action yesterday (I)',         expl:v=>`Past simple: ${v.base} → ${v.past} (${v.type}).` },
+      { s:'She ___ ({sp}) last night.',             ans:v=>v.past_norm, hint:'Something done last night (she)',        expl:v=>`Past simple: ${v.base} → ${v.past_norm}.` },
+      { s:'They ___ ({sp}) last week.',             ans:v=>v.past,      hint:'Completed action last week (they)',      expl:v=>`Past simple: ${v.base} → ${v.past}.` },
+      { s:'He ___ ({sp}) this morning.',            ans:v=>v.past_norm, hint:'Finished action this morning (he)',      expl:v=>`${v.type === 'regular' ? 'Regular verb: add -ed' : 'Irregular verb'}: ${v.base} → ${v.past_norm}.` },
+      { s:'We ___ ({sp}) when we were young.',      ans:v=>v.past,      hint:'Past habit no longer true (we)',         expl:v=>`Past simple for past habits: ${v.base} → ${v.past}.` },
+    ]},
+  { id:'pac', label:'Past Continuous', structure:'Subject + was/were + V-ing',
+    templates:[
+      { s:'I ___ ({sp}) when you called.',          ans:v=>`was ${v.ing}`,  hint:'Action in progress when interrupted (I)',  expl:v=>`was + V-ing: was ${v.ing}.` },
+      { s:'She ___ ({sp}) all afternoon.',          ans:v=>`was ${v.ing}`,  hint:'Ongoing background action (she)',          expl:v=>`was + V-ing: was ${v.ing}.` },
+      { s:'They ___ ({sp}) when I arrived.',        ans:v=>`were ${v.ing}`, hint:'Activity in progress on my arrival',       expl:v=>`were + V-ing: were ${v.ing}.` },
+      { s:'At 8 pm, he ___ ({sp}).',                ans:v=>`was ${v.ing}`,  hint:'Activity in progress at a past time',      expl:v=>`was + V-ing for a past moment in progress: was ${v.ing}.` },
+      { s:'We ___ ({sp}) while it rained.',         ans:v=>`were ${v.ing}`, hint:'Parallel ongoing past actions',             expl:v=>`were + V-ing: were ${v.ing}.` },
+    ]},
+  { id:'pap', label:'Past Perfect', structure:'Subject + had + V3 (past participle)',
+    templates:[
+      { s:'I ___ ({sp}) before she arrived.',       ans:v=>`had ${v.participle}`, hint:'Action completed before another past event', expl:v=>`Past perfect: had + past participle → had ${v.participle}.` },
+      { s:'She ___ ({sp}) by the time we got there.',ans:v=>`had ${v.participle}`,hint:'Completed before a past reference point',  expl:v=>`had + past participle: had ${v.participle}.` },
+      { s:'They ___ ({sp}) before the meeting.',    ans:v=>`had ${v.participle}`, hint:'Done before the meeting started',          expl:v=>`had + past participle: had ${v.participle}.` },
+      { s:'He ___ already ___ ({sp}).',             ans:v=>`had / ${v.participle}`,hint:"'Already' = done before a past moment",  expl:v=>`had already + past participle: had already ${v.participle}.` },
+      { s:'When I checked, they ___ ({sp}).',       ans:v=>`had ${v.participle}`, hint:'Past action before my checking',          expl:v=>`had + past participle: had ${v.participle}.` },
+    ]},
+  { id:'papc', label:'Past Perfect Continuous', structure:'Subject + had been + V-ing',
+    templates:[
+      { s:'I ___ ({sp}) for hours when she called.',ans:v=>`had been ${v.ing}`, hint:'Long activity before a past interruption', expl:v=>`had been + V-ing shows duration before a past event: had been ${v.ing}.` },
+      { s:'She was tired because she ___ ({sp}).',  ans:v=>`had been ${v.ing}`, hint:'Activity that caused past tiredness',      expl:v=>`had been + V-ing explains a past result: had been ${v.ing}.` },
+      { s:'They ___ ({sp}) for months before finishing.',ans:v=>`had been ${v.ing}`,hint:'Long effort before past completion', expl:v=>`had been + V-ing: had been ${v.ing}.` },
+      { s:'He ___ ({sp}) all day before the storm.', ans:v=>`had been ${v.ing}`,hint:'Sustained past activity before an event', expl:v=>`had been + V-ing: had been ${v.ing}.` },
+      { s:'We ___ ({sp}) for weeks before we stopped.',ans:v=>`had been ${v.ing}`,hint:'Ongoing activity that eventually ended', expl:v=>`had been + V-ing for duration before a past stopping point: had been ${v.ing}.` },
+    ]},
+  { id:'fw', label:'Future Simple (will)', structure:'Subject + will + V1 (base)',
+    templates:[
+      { s:'I ___ ({sp}) tomorrow.',                 ans:v=>`will ${v.base}`, hint:'Spontaneous decision or promise (I)',     expl:v=>`will + base form: will ${v.base}.` },
+      { s:'She ___ ({sp}) next week.',              ans:v=>`will ${v.base}`, hint:'Prediction about the future (she)',       expl:v=>`will + base form: will ${v.base}.` },
+      { s:'They ___ ({sp}) later today.',           ans:v=>`will ${v.base}`, hint:'Future action (they)',                    expl:v=>`will + base form: will ${v.base}.` },
+      { s:'I think he ___ ({sp}).',                 ans:v=>`will ${v.base}`, hint:'Opinion-based prediction',               expl:v=>`will + base form for predictions: will ${v.base}.` },
+      { s:'I promise I ___ ({sp}).',                ans:v=>`will ${v.base}`, hint:'A promise about the future',             expl:v=>`will + base form for promises: will ${v.base}.` },
+    ]},
+  { id:'fg', label:'Going to (future)', structure:'Subject + am/is/are + going to + V1',
+    templates:[
+      { s:'I ___ ({sp}) this weekend.',             ans:v=>`am going to ${v.base}`, hint:'Personal plan already decided (I)',     expl:v=>`am going to + base form: am going to ${v.base}.` },
+      { s:'She ___ ({sp}) next month.',             ans:v=>`is going to ${v.base}`, hint:'Pre-arranged plan (she)',               expl:v=>`is going to + base form: is going to ${v.base}.` },
+      { s:'They ___ ({sp}) after class.',           ans:v=>`are going to ${v.base}`,hint:'Group plan already made (they)',        expl:v=>`are going to + base form: are going to ${v.base}.` },
+      { s:'Look at those clouds — it ___ rain.',    ans:v=>`is going to`,           hint:'Evidence of an imminent event',         expl:`is going to (+ verb) = prediction based on present evidence.` },
+      { s:'He ___ ({sp}) tomorrow — he told me.',  ans:v=>`is going to ${v.base}`, hint:'Plan already decided (he)',             expl:v=>`is going to + base form: is going to ${v.base}.` },
+    ]},
+  { id:'fc', label:'Future Continuous', structure:'Subject + will be + V-ing',
+    templates:[
+      { s:'This time tomorrow, I ___ ({sp}).',      ans:v=>`will be ${v.ing}`, hint:'Activity in progress at a future moment', expl:v=>`will be + V-ing: will be ${v.ing}.` },
+      { s:'At 8 pm, she ___ ({sp}).',               ans:v=>`will be ${v.ing}`, hint:'Expected activity at a specific future time', expl:v=>`will be + V-ing: will be ${v.ing}.` },
+      { s:'This time next week, they ___ ({sp}).',  ans:v=>`will be ${v.ing}`, hint:'Ongoing activity at a future point',      expl:v=>`will be + V-ing: will be ${v.ing}.` },
+      { s:'Don\'t call — he ___ ({sp}) then.',      ans:v=>`will be ${v.ing}`, hint:'Activity likely in progress then (he)',   expl:v=>`will be + V-ing for an expected future activity: will be ${v.ing}.` },
+      { s:'We ___ ({sp}) when you arrive.',         ans:v=>`will be ${v.ing}`, hint:'Action in progress when you get there',  expl:v=>`will be + V-ing: will be ${v.ing}.` },
+    ]},
+  { id:'fp', label:'Future Perfect', structure:'Subject + will have + V3 (past participle)',
+    templates:[
+      { s:'By Friday, I ___ ({sp}).',               ans:v=>`will have ${v.participle}`, hint:'Completed before a future deadline (I)', expl:v=>`will have + past participle: will have ${v.participle}.` },
+      { s:'By next month, she ___ ({sp}).',         ans:v=>`will have ${v.participle}`, hint:'Done before a future point (she)',        expl:v=>`will have + past participle: will have ${v.participle}.` },
+      { s:'By the time you arrive, they ___ ({sp}).',ans:v=>`will have ${v.participle}`,hint:'Completed before a future event',         expl:v=>`will have + past participle: will have ${v.participle}.` },
+      { s:'He ___ ({sp}) by the end of the day.',   ans:v=>`will have ${v.participle}`, hint:'Completion before end of day (he)',       expl:v=>`will have + past participle: will have ${v.participle}.` },
+      { s:'I promise: by June, I ___ ({sp}).',      ans:v=>`will have ${v.participle}`, hint:'Commitment to complete before a future time', expl:v=>`will have + past participle: will have ${v.participle}.` },
+    ]},
 ];
 
-const Q={
-  sp:[
-    {s:"The sun ___ in the east every morning.",a:"rises",hint:"A universal natural fact",expl:"Simple present for facts/truths. Third person singular: rise → rises."},
-    {s:"She ___ coffee before going to work.",a:"drinks",hint:"A daily morning routine",expl:"Habitual action. Third person singular: drink → drinks."},
-    {s:"My brother ___ at a hospital.",a:"works",hint:"His current occupation",expl:"Simple present for permanent situations. Third person singular: work → works."},
-    {s:"Dogs ___ a lot in hot weather.",a:"pant",hint:"What dogs do when it's hot",expl:"Plural subject takes base form — no -s added."},
-    {s:"Water ___ at 100 degrees Celsius.",a:"boils",hint:"A scientific fact",expl:"Scientific facts use simple present. Third person singular: boil → boils."},
-    {s:"He rarely ___ his homework on time.",a:"finishes",hint:"A bad habit",expl:"'Rarely' signals habit. Third person singular: finish → finishes."},
-    {s:"The train ___ at 7:45 every morning.",a:"leaves",hint:"A fixed timetable",expl:"Timetabled events use simple present. Third person singular: leave → leaves."},
-    {s:"They ___ French at their school.",a:"teach",hint:"What those teachers do",expl:"Plural subject takes base form — no -s."},
-    {s:"My cat ___ all day long.",a:"sleeps",hint:"A very lazy pet",expl:"Habitual action. Third person singular: sleep → sleeps."},
-    {s:"She always ___ before bed.",a:"reads",hint:"A bedtime habit",expl:"Simple present for routine habits. Third person singular: read → reads."},
-  ],
-  pc:[
-    {s:"Listen! The birds ___ outside.",a:"are singing",hint:"You can hear them right now",expl:"Action happening at this exact moment. are + singing."},
-    {s:"I ___ for my final exams this week.",a:"am studying",hint:"Something happening around now",expl:"Present continuous for actions in progress around the present period."},
-    {s:"She can't talk — she ___ a shower.",a:"is taking",hint:"She's busy at this moment",expl:"Action in progress at the moment of speaking. is + taking."},
-    {s:"They ___ a new restaurant downtown.",a:"are opening",hint:"A current project",expl:"Present continuous for current projects or changing situations."},
-    {s:"He ___ better since he started therapy.",a:"is getting",hint:"A positive trend lately",expl:"Present continuous for a developing/changing situation."},
-    {s:"We ___ for the bus right now.",a:"are waiting",hint:"Currently at the bus stop",expl:"Ongoing action at the moment of speaking. are + waiting."},
-    {s:"The kids ___ a lot of noise upstairs!",a:"are making",hint:"You can hear it right now",expl:"Action in progress at this moment. are + making."},
-    {s:"My sister ___ in Australia for a year.",a:"is living",hint:"A temporary situation",expl:"Present continuous for temporary situations. is + living."},
-    {s:"The price of food ___ every month.",a:"is rising",hint:"An ongoing economic trend",expl:"Present continuous for an ongoing change or trend."},
-    {s:"He ___ a book about space exploration.",a:"is writing",hint:"His current personal project",expl:"An activity in progress over a period of time. is + writing."},
-  ],
-  pp:[
-    {s:"I ___ this movie three times already.",a:"have seen",hint:"Life experience — how many times?",expl:"Present perfect for experiences up to now. have + seen."},
-    {s:"She ___ her keys somewhere.",a:"has lost",hint:"She can't find them — present consequence",expl:"Past action with present consequence. has + lost."},
-    {s:"They ___ to Japan twice.",a:"have been",hint:"Travel experience in their life",expl:"Present perfect for life experiences. have + been."},
-    {s:"He ___ yet. The meeting is still going.",a:"hasn't finished",hint:"Still not done",expl:"Negative present perfect with 'yet' for incomplete actions. hasn't + finished."},
-    {s:"We ___ this problem before.",a:"have never encountered",hint:"Completely new situation",expl:"Present perfect with 'never' for zero experience. have + never + past participle."},
-    {s:"The government ___ new laws this year.",a:"has introduced",hint:"Recent action in an unfinished period",expl:"'This year' is unfinished, so present perfect is used. has + introduced."},
-    {s:"I ___ my report, so I can relax now.",a:"have finished",hint:"Done, with a present result",expl:"Past action with current relevance. have + finished."},
-    {s:"The company ___ its headquarters recently.",a:"has moved",hint:"A recent change",expl:"'Recently' signals present perfect. has + moved."},
-    {s:"You ___ so much since we last met!",a:"have changed",hint:"Noticing a difference up to now",expl:"Present perfect for change up to the present moment. have + changed."},
-    {s:"She ___ already ___ breakfast.",a:"has / eaten",hint:"She's not hungry — it's done",expl:"'Already' with present perfect. has + eaten (irregular past participle)."},
-  ],
-  ppc:[
-    {s:"She is tired because she ___ for two hours.",a:"has been running",hint:"Recent activity with a present result",expl:"Present perfect continuous for recent sustained activity. has been + running."},
-    {s:"I ___ this novel for weeks and I love it.",a:"have been reading",hint:"Ongoing activity started in the past",expl:"Action started in the past and continues to now. have been + reading."},
-    {s:"They ___ together since college.",a:"have been dating",hint:"A relationship that started in the past",expl:"'Since' signals a start point. have been + dating emphasizes ongoing duration."},
-    {s:"He ___ hard all month to get that promotion.",a:"has been working",hint:"Sustained effort with a present result",expl:"Stresses duration and current relevance. has been + working."},
-    {s:"It ___ for three days straight.",a:"has been raining",hint:"Non-stop rain, still cloudy outside",expl:"Continuous rain from the past up to now. has been + raining."},
-    {s:"We ___ this issue all morning.",a:"have been discussing",hint:"An ongoing meeting or conversation",expl:"Duration of an activity up to now. have been + discussing."},
-    {s:"My eyes hurt because I ___ all night.",a:"have been studying",hint:"Cause of a current physical condition",expl:"Present perfect continuous explains a current condition. have been + studying."},
-    {s:"The kids ___ video games for hours!",a:"have been playing",hint:"Parent noticing the length of play",expl:"Activity ongoing for a long time. have been + playing."},
-    {s:"She ___ for a job since January.",a:"has been looking",hint:"Still searching, not yet hired",expl:"Search started in the past and is still ongoing. has been + looking."},
-    {s:"How long ___ you ___ to learn Spanish?",a:"have / been trying",hint:"Asking about the duration of an effort",expl:"Question form: How long + have/has + subject + been + V-ing?"},
-  ],
-  past:[
-    {s:"She ___ her keys yesterday.",a:"lost",hint:"It happened yesterday",expl:"Simple past for a completed action at a specific past time. lose → lost (irregular)."},
-    {s:"We ___ dinner at 8 o'clock last night.",a:"had",hint:"A specific time last night",expl:"'Last night' signals simple past. have → had (irregular)."},
-    {s:"He ___ his bike to school every day as a child.",a:"rode",hint:"A past habit — no longer true",expl:"Simple past for past habits. ride → rode (irregular)."},
-    {s:"They ___ hard for the test and passed easily.",a:"studied",hint:"Completed action before the test",expl:"Completed past action. study → studied (consonant+y → ied)."},
-    {s:"I ___ a great movie last Saturday.",a:"watched",hint:"A specific past event",expl:"Completed past action. watch → watched (regular)."},
-    {s:"The plane ___ at 6 am this morning.",a:"landed",hint:"A scheduled past event",expl:"Completed event at a past time. land → landed (regular)."},
-    {s:"He ___ a pizza and watched football.",a:"ordered",hint:"Two past events in sequence",expl:"Simple past for sequential completed actions. order → ordered."},
-    {s:"We ___ on vacation to Costa Rica last summer.",a:"went",hint:"A specific past trip",expl:"Simple past. go → went (irregular)."},
-    {s:"She ___ the door and walked in.",a:"opened",hint:"A sequence of past actions",expl:"Completed past action. open → opened (regular)."},
-    {s:"The cat ___ on the sofa all afternoon.",a:"slept",hint:"What the cat did all afternoon",expl:"Simple past. sleep → slept (irregular)."},
-  ],
-  pac:[
-    {s:"While I ___ a shower, the phone rang.",a:"was taking",hint:"The shower was interrupted",expl:"Past continuous shows a longer action interrupted by a shorter one. was + taking."},
-    {s:"They ___ football when it started to rain.",a:"were playing",hint:"Rain interrupted the game",expl:"Ongoing past action interrupted by a sudden event. were + playing."},
-    {s:"She ___ all morning, so she didn't hear us.",a:"was sleeping",hint:"A long background action in the past",expl:"Past continuous for an ongoing background action. was + sleeping."},
-    {s:"What ___ you ___ at 9 pm last night?",a:"were / doing",hint:"Asking about an activity in progress",expl:"Question in past continuous: What + were + subject + V-ing?"},
-    {s:"I ___ to music when my friend called.",a:"was listening",hint:"The call interrupted the activity",expl:"Past continuous for the action in progress when something else happened."},
-    {s:"While she ___ the report, her computer crashed.",a:"was writing",hint:"The crash happened during the writing",expl:"was + writing describes the longer background action."},
-    {s:"At 3 am, the neighbours ___ loudly.",a:"were arguing",hint:"Ongoing noisy activity at a specific past time",expl:"Past continuous for an action in progress at a specific past moment."},
-    {s:"He ___ when I arrived, so I waited.",a:"was working",hint:"His work was already in progress when you arrived",expl:"Background action in progress when another event occurred. was + working."},
-    {s:"The children ___ when the power went out.",a:"were sleeping",hint:"The power cut happened during sleep",expl:"Past continuous for an ongoing action that was interrupted. were + sleeping."},
-    {s:"We ___ dinner when we heard the news.",a:"were having",hint:"The news arrived during the meal",expl:"were + having shows the meal was in progress when the news came."},
-  ],
-  pap:[
-    {s:"By the time she arrived, everyone ___.",a:"had left",hint:"They left before she arrived",expl:"Past perfect for an action completed before another past event. had + left."},
-    {s:"He was happy because he ___ his exam.",a:"had passed",hint:"Passing happened before the happiness",expl:"Past perfect shows the earlier of two past events. had + passed."},
-    {s:"I ___ that movie before, so I knew the ending.",a:"had seen",hint:"A past experience before a past moment",expl:"'Before' signals the earlier action. had + seen."},
-    {s:"They ___ dinner before the guests arrived.",a:"had cooked",hint:"Cooking was done before guests came",expl:"Past perfect for completion before another past moment. had + cooked."},
-    {s:"She realized she ___ her wallet at home.",a:"had left",hint:"Discovered later that something was forgotten",expl:"Past perfect for a past action before the moment of realization. had + left."},
-    {s:"When I got to the cinema, the film already ___.",a:"had started",hint:"Too late — it had already begun",expl:"'Already' with past perfect signals completion before a past reference point. had + started."},
-    {s:"He ___ English before moving to London.",a:"had studied",hint:"Study came before the move",expl:"The studying happened before the move. had + studied."},
-    {s:"We couldn't enter because we ___ our tickets.",a:"hadn't brought",hint:"Forgot something important",expl:"Negative past perfect for something not done before a past point. hadn't + brought."},
-    {s:"By 2020, she ___ three novels.",a:"had written",hint:"Completed before a specific past year",expl:"'By 2020' marks a past deadline. had + written shows completion before it."},
-    {s:"The patient ___ three surgeries before recovering.",a:"had undergone",hint:"Multiple events before recovery",expl:"Past perfect for multiple events before another past moment. had + undergone."},
-  ],
-  papc:[
-    {s:"She was tired because she ___ all day.",a:"had been working",hint:"Long effort before the tiredness",expl:"Past perfect continuous stresses duration before a past result. had been + working."},
-    {s:"By the time the rain stopped, we ___ for two hours.",a:"had been waiting",hint:"Long wait before a past event",expl:"had been + waiting shows duration of the wait before the rain stopped."},
-    {s:"He ___ to get that role for years before he succeeded.",a:"had been trying",hint:"Long effort before success",expl:"Past perfect continuous for sustained effort before a past moment. had been + trying."},
-    {s:"The kids ___ all afternoon, that's why they were so tired.",a:"had been playing",hint:"Long activity caused past tiredness",expl:"Duration of activity explains a past result. had been + playing."},
-    {s:"She smelled of paint because she ___ the house.",a:"had been painting",hint:"The smell was evidence of the activity",expl:"Past perfect continuous for a recent sustained activity with a visible past result."},
-    {s:"How long ___ they ___ before they broke up?",a:"had / been dating",hint:"Asking about the duration of a past relationship",expl:"Question form: How long + had + subject + been + V-ing?"},
-    {s:"I was exhausted because I ___ all night.",a:"had been studying",hint:"All-night effort before morning",expl:"Past perfect continuous for the cause of a past condition. had been + studying."},
-    {s:"They ___ for hours when they finally found the solution.",a:"had been discussing",hint:"Long discussion before the breakthrough",expl:"Duration of past discussion before a past moment. had been + discussing."},
-    {s:"The ground was wet because it ___ heavily.",a:"had been raining",hint:"Rain before a past observation",expl:"Past perfect continuous for the cause of a past observable result."},
-    {s:"She ___ for the company for 20 years when she retired.",a:"had been working",hint:"Long career before retirement",expl:"had been + working emphasizes duration of service before the past event of retirement."},
-  ],
-  fw:[
-    {s:"I'm sure he ___ the test. He studied hard.",a:"will pass",hint:"A confident prediction",expl:"'Will' expresses predictions or confident beliefs about the future. will + V1."},
-    {s:"Don't worry, I ___ you move the furniture.",a:"will help",hint:"A spontaneous offer made right now",expl:"'Will' for spontaneous decisions or offers at the moment of speaking. will + help."},
-    {s:"She ___ 30 next month.",a:"will be",hint:"A future fact",expl:"'Will' for facts about the future. will + be."},
-    {s:"If it rains tomorrow, we ___ inside.",a:"will stay",hint:"A conditional future result",expl:"In first conditional, the result clause uses will + V1."},
-    {s:"I think technology ___ our lives dramatically.",a:"will change",hint:"A general future prediction",expl:"'Will' for predictions based on opinion. will + change."},
-    {s:"He ___ the project by Friday, I'm certain.",a:"will finish",hint:"A confident prediction about a deadline",expl:"'Will' expresses certainty about a future event. will + finish."},
-    {s:"Don't call her now — she ___ busy.",a:"will be",hint:"A prediction about her state right now",expl:"'Will' for predictions or assumptions. will + be."},
-    {s:"I promise I ___ you soon.",a:"will call",hint:"A promise made right now",expl:"'Will' for promises. will + call."},
-    {s:"Scientists believe the climate ___ warmer.",a:"will get",hint:"A scientific future prediction",expl:"'Will' for predictions based on evidence or belief. will + get."},
-    {s:"___ you please close the window?",a:"Will",hint:"A polite request",expl:"'Will' in questions can be a polite request. Will + subject + V1?"},
-  ],
-  fg:[
-    {s:"Watch out! That ladder ___ fall!",a:"is going to",hint:"You can see it's about to happen",expl:"'Going to' for imminent events with present evidence. is/am/are + going to + V1."},
-    {s:"She has already bought tickets — she ___ Paris next week.",a:"is going to visit",hint:"A pre-planned trip",expl:"'Going to' for plans and intentions already decided. is going to + visit."},
-    {s:"I ___ start going to the gym next month.",a:"am going to",hint:"A personal intention or plan",expl:"'Going to' for personal intentions. am going to + V1."},
-    {s:"Look at those clouds — it ___ rain.",a:"is going to",hint:"Clear visual evidence right now",expl:"'Going to' when there is present evidence of a future event."},
-    {s:"They have signed the contract. They ___ open a new branch.",a:"are going to",hint:"A decision already made",expl:"'Going to' for plans or decisions already made. are going to + V1."},
-    {s:"He ___ study medicine. He's applied to three universities.",a:"is going to",hint:"A planned future action",expl:"'Going to' for pre-arranged plans. is going to + V1."},
-    {s:"We ___ visit my grandparents this weekend.",a:"are going to",hint:"A family plan already arranged",expl:"'Going to' for plans made in advance. are going to + V1."},
-    {s:"She ate too much — she ___ feel sick.",a:"is going to",hint:"A predictable consequence",expl:"'Going to' for predictions based on present evidence. is going to + V1."},
-    {s:"I ___ learn how to cook Italian food this year.",a:"am going to",hint:"A personal resolution or goal",expl:"'Going to' for intentions and goals. am going to + V1."},
-    {s:"The project deadline is Monday — we ___ work all weekend.",a:"are going to",hint:"A necessary plan based on the situation",expl:"'Going to' for plans resulting from current circumstances. are going to + V1."},
-  ],
-  fc:[
-    {s:"This time next week, I ___ on a beach in Cancún.",a:"will be lying",hint:"Imagining yourself at a specific future moment",expl:"Future continuous for an action in progress at a specific future time. will be + V-ing."},
-    {s:"Don't call at 8 pm — she ___ her favourite show.",a:"will be watching",hint:"A predictable ongoing activity at a future time",expl:"Future continuous for an activity expected to be in progress at a future moment."},
-    {s:"By the time you arrive, they ___ dinner.",a:"will be having",hint:"The meal will be in progress when you get there",expl:"Future continuous shows an action will be ongoing at a future reference point."},
-    {s:"He ___ in the Tokyo office next year.",a:"will be working",hint:"A future ongoing arrangement",expl:"Future continuous for planned ongoing situations. will be + working."},
-    {s:"This time tomorrow, we ___ to New York.",a:"will be flying",hint:"In-flight at that exact future moment",expl:"will be + flying shows the action will be in progress at a specific future time."},
-    {s:"At midnight, the team ___ the final results.",a:"will be announcing",hint:"A scheduled ongoing action at a future time",expl:"Future continuous for a planned action in progress at a specific future moment."},
-    {s:"She ___ the presentation when the CEO walks in.",a:"will be giving",hint:"The presentation will already be in progress",expl:"Future continuous shows an ongoing action at the moment another future event occurs."},
-    {s:"Don't worry, we ___ for you when you land.",a:"will be waiting",hint:"An action ongoing at a future moment",expl:"will be + waiting shows the waiting will be in progress when you arrive."},
-    {s:"The students ___ their exams this time next month.",a:"will be taking",hint:"Exams in progress at a specific future time",expl:"Future continuous for an action expected to be in progress at a future time."},
-    {s:"I ___ about you every day while you're away.",a:"will be thinking",hint:"An ongoing future state",expl:"will be + thinking describes an ongoing action during a future period."},
-  ],
-  fp:[
-    {s:"By the time you wake up, I ___ the whole house.",a:"will have cleaned",hint:"Completed before a future moment",expl:"Future perfect for an action completed before a future reference point. will have + V3."},
-    {s:"She ___ her degree by June.",a:"will have finished",hint:"Graduation before a future month",expl:"'By June' is the future deadline. will have + finished."},
-    {s:"By 2030, scientists ___ a cure for that disease.",a:"will have found",hint:"A future achievement before a set year",expl:"Future perfect for completion before a future point in time. will have + found."},
-    {s:"He ___ 1,000 hours of flight time by next year.",a:"will have logged",hint:"A total achieved before a future moment",expl:"Future perfect for accumulated achievements by a future deadline. will have + logged."},
-    {s:"By the time the movie starts, we ___ all the popcorn.",a:"will have eaten",hint:"Gone before the film begins",expl:"will have + eaten shows completion before the future reference point."},
-    {s:"I ___ this book by Friday, I promise.",a:"will have read",hint:"A commitment to finish before a deadline",expl:"Future perfect expresses completion before a stated future moment. will have + read."},
-    {s:"They ___ the new bridge by the end of the year.",a:"will have built",hint:"Construction complete before year-end",expl:"'By the end of the year' is the future deadline. will have + built."},
-    {s:"By the time she retires, she ___ for 40 years.",a:"will have worked",hint:"A total duration completed at a future point",expl:"Future perfect for duration completed by a future moment. will have + worked."},
-    {s:"___ you ___ the report before the meeting?",a:"Will / have written",hint:"Asking if it will be done before a future event",expl:"Question form: Will + subject + have + V3?"},
-    {s:"By next month, they ___ in their new house for a year.",a:"will have been living",hint:"A duration reached at a future point",expl:"Future perfect continuous for duration completed at a future moment. will have been + living."},
-  ],
-};
+const GROUPS = [
+  { label:'Present tenses', ids:['sp','pc','pp','ppc'] },
+  { label:'Past tenses',    ids:['past','pac','pap','papc'] },
+  { label:'Future tenses',  ids:['fw','fg','fc','fp'] },
+];
 
-let sel=null,correct=0,wrong=0,total=0;
-let pool=[],used=[],qCount=0,answered=false;
-const allTenses=[];
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let sel=null, correct=0, wrong=0, total=0;
+let vpool=[], vused=[], tpool=[], tused=[], qCount=0, answered=false;
 
-// Build UI
-const groupsEl=document.getElementById("groups");
+// ── BUILD UI ──────────────────────────────────────────────────────────────────
+const grpsEl=document.getElementById('groups');
 let n=1;
 GROUPS.forEach(g=>{
-  const gDiv=document.createElement("div");
-  const lbl=document.createElement("div");
-  lbl.className="group-label";lbl.textContent=g.label;
-  gDiv.appendChild(lbl);
-  const grid=document.createElement("div");
-  grid.className="tense-grid";
-  g.tenses.forEach(t=>{
-    allTenses.push(t);
-    const btn=document.createElement("button");
-    btn.className="tense-btn";btn.dataset.id=t.id;
-    btn.innerHTML=`<span class="tn">${String(n).padStart(2,"0")}</span>${t.label}`;
+  const gd=document.createElement('div');
+  const lb=document.createElement('div'); lb.className='glabel'; lb.textContent=g.label;
+  gd.appendChild(lb);
+  const grid=document.createElement('div'); grid.className='tgrid';
+  g.ids.forEach(id=>{
+    const t=TENSES.find(x=>x.id===id);
+    const btn=document.createElement('button');
+    btn.className='tbtn'; btn.dataset.id=id;
+    btn.innerHTML=`<span class="tn">${String(n).padStart(2,'0')}</span>${t.label}`;
     btn.onclick=()=>pick(t);
-    grid.appendChild(btn);n++;
+    grid.appendChild(btn); n++;
   });
-  gDiv.appendChild(grid);
-  groupsEl.appendChild(gDiv);
+  gd.appendChild(grid); grpsEl.appendChild(gd);
 });
 
-function randomTense(){pick(allTenses[Math.floor(Math.random()*allTenses.length)]);}
+function rndTense(){ pick(TENSES[Math.floor(Math.random()*TENSES.length)]); }
 
 function pick(t){
   sel=t;
-  document.querySelectorAll(".tense-btn").forEach(b=>b.classList.toggle("active",b.dataset.id===t.id));
-  pool=[...Q[t.id]];used=[];qCount=0;nextQ();
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.toggle('active',b.dataset.id===t.id));
+  vpool=[...VERBS]; vused=[];
+  tpool=[...t.templates]; tused=[];
+  qCount=0; nextQ();
 }
+
+function pickRand(arr){ return arr.splice(Math.floor(Math.random()*arr.length),1)[0]; }
 
 function nextQ(){
-  if(!pool.length){pool=[...used];used=[];}
-  const i=Math.floor(Math.random()*pool.length);
-  const q=pool.splice(i,1)[0];
-  used.push(q);qCount++;answered=false;renderQ(q);
+  if(!vpool.length){ vpool=[...vused]; vused=[]; }
+  if(!tpool.length){ tpool=[...sel.templates]; tused=[]; }
+  const v=pickRand(vpool); vused.push(v);
+  const tmpl=pickRand(tpool); tused.push(tmpl);
+  qCount++; answered=false;
+  renderQ(v, tmpl);
 }
 
-function renderQ(q){
-  const area=document.getElementById("quiz-area");
-  const parts=q.s.split("___");
-  const sent=parts[0]+'<span class="blank-word">______</span>'+(parts[1]||"");
-  document.getElementById("prog").style.width=Math.min(100,Math.round(qCount/Q[sel.id].length*100))+"%";
+function renderQ(v, tmpl){
+  const area=document.getElementById('qa');
+  // Compute answer - handle special case for "it is going to rain" template
+  let ans;
+  try { ans = (typeof tmpl.ans==='function') ? tmpl.ans(v) : tmpl.ans; }
+  catch(e){ ans = '—'; }
+  // Compute explanation
+  let expl;
+  try { expl = (typeof tmpl.expl==='function') ? tmpl.expl(v) : tmpl.expl; }
+  catch(e){ expl = ''; }
+
+  // Build sentence: replace ___ with blank, {sp} with Spanish
+  let sent = tmpl.s.replace('{sp}', v.spanish);
+  // Handle split blanks like "have / participle"
+  if(ans.includes(' / ')){
+    const parts = sent.split('___');
+    sent = parts[0]+'<span class="blank">____</span>'+parts[1].replace('___','<span class="blank">____</span>')+(parts[2]||'');
+  } else {
+    sent = sent.replace('___','<span class="blank">________</span>');
+  }
+
+  // Progress
+  const prog=Math.min(100,Math.round(qCount/VERBS.length*100));
+  document.getElementById('prog').style.width=prog+'%';
+
   area.innerHTML=`
-    <div class="quiz-card">
-      <div class="card-top">
-        <span class="tense-badge">${sel.label}</span>
-        <span class="q-counter">Question ${qCount}</span>
+    <div class="card">
+      <div class="ctop">
+        <span class="badge">${sel.label}</span>
+        <span class="qn">Question ${qCount}</span>
       </div>
-      <div class="structure-box">${sel.structure}</div>
-      <div class="question-text">${sent}</div>
-      <div class="hint">💡 ${q.hint}</div>
-      <div class="input-row">
-        <input class="ans-input" id="ans" placeholder="Type the missing verb form..." autocomplete="off" spellcheck="false"/>
-        <button class="check-btn" id="cbtn" onclick="check()">Check</button>
+      <div class="sbox">${sel.structure}</div>
+      <div class="qtext">${sent}</div>
+      <div class="vref">Verb: <strong>${v.base}</strong> → ${v.past} → ${v.participle} &nbsp;|&nbsp; ${v.spanish}</div>
+      <div class="irow">
+        <input class="ainp" id="ans" placeholder="Type the complete verb form…" autocomplete="off" spellcheck="false"/>
+        <button class="ckbtn" id="cbtn" onclick="doCheck()">Check</button>
       </div>
       <div id="fb"></div>
     </div>
-    <button class="next-btn" id="nbtn" onclick="nextQ()">Next question →</button>`;
-  area._q=q;
-  const inp=document.getElementById("ans");
+    <button class="nxtbtn" id="nbtn" onclick="nextQ()">Next question →</button>`;
+  area._v=v; area._tmpl=tmpl; area._ans=ans; area._expl=expl;
+  const inp=document.getElementById('ans');
   inp.focus();
-  inp.addEventListener("keydown",e=>{if(e.key==="Enter"&&!answered)check();});
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!answered) doCheck(); });
 }
 
-function norm(s){return s.trim().toLowerCase().replace(/\s+/g," ");}
+function norm(s){ return s.trim().toLowerCase().replace(/\s+/g,' '); }
 
-function check(){
-  if(answered)return;
-  const area=document.getElementById("quiz-area");
-  const q=area._q;
-  const inp=document.getElementById("ans");
-  const val=inp.value.trim();
-  if(!val){inp.focus();return;}
-  answered=true;inp.disabled=true;document.getElementById("cbtn").disabled=true;
-  const u=norm(val),c=norm(q.a);
-  const ok=u===c||u.replace(/'/g,"")===c.replace(/'/g,"")||u===c.replace("n't"," not")||c===u.replace("n't"," not");
-  total++;if(ok)correct++;else wrong++;
+function doCheck(){
+  if(answered) return;
+  const area=document.getElementById('qa');
+  const ans=area._ans; const expl=area._expl;
+  const inp=document.getElementById('ans');
+  const val=inp.value.trim(); if(!val){ inp.focus(); return; }
+  answered=true; inp.disabled=true; document.getElementById('cbtn').disabled=true;
+
+  const u=norm(val), c=norm(ans);
+  // Also accept answers without slash for split answers
+  const cAlt=c.replace(' / ',' ');
+  const ok = u===c || u===cAlt
+    || u.replace(/'/g,'')===c.replace(/'/g,'')
+    || u===c.replace("n't",' not')
+    || c===u.replace("n't",' not');
+
+  total++; if(ok) correct++; else wrong++;
   updateScore();
-  const fb=document.getElementById("fb");
+
+  const fb=document.getElementById('fb');
   if(ok){
-    fb.innerHTML=`<div class="feedback correct">✓ Correct! Well done.<div class="expl">${q.expl}</div></div>`;
-  }else{
-    fb.innerHTML=`<div class="feedback wrong">✗ Not quite. Correct answer: <span class="correct-ans">${q.a}</span><div class="expl">${q.expl}</div></div>`;
+    fb.innerHTML=`<div class="fb ok">✓ Correct! Well done.<div class="expl">${expl}</div></div>`;
+  } else {
+    fb.innerHTML=`<div class="fb no">✗ Not quite. Correct: <span class="cans">${ans}</span><div class="expl">${expl}</div></div>`;
   }
-  document.getElementById("nbtn").style.display="block";
+  document.getElementById('nbtn').style.display='block';
 }
 
 function updateScore(){
-  document.getElementById("s-correct").textContent="✓ "+correct;
-  document.getElementById("s-wrong").textContent="✗ "+wrong;
-  document.getElementById("s-pct").textContent=total?Math.round(correct/total*100)+" %":"— %";
+  document.getElementById('sc').textContent='✓ '+correct;
+  document.getElementById('sw').textContent='✗ '+wrong;
+  document.getElementById('sp2').textContent=total?Math.round(correct/total*100)+' %':'— %';
 }
 </script>
 </body>
