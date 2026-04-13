@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>English Tenses Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #F7F5F0;
+    --surface: #FFFFFF;
+    --surface2: #F0EDE6;
+    --text: #1A1814;
+    --text2: #6B6558;
+    --text3: #9E9891;
+    --blue: #1B4F8A;
+    --blue-light: #E8F0FB;
+    --blue-mid: #3A7BD5;
+    --green: #2D6A4F;
+    --green-light: #D8F3DC;
+    --red: #9B2226;
+    --red-light: #FFE8E8;
+    --gold: #B5881C;
+    --gold-light: #FEF7E0;
+    --border: rgba(0,0,0,0.08);
+    --border2: rgba(0,0,0,0.14);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* TOP BAR */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo { font-family: 'Lora', serif; font-size: 18px; font-weight: 600; color: var(--text); }
+  .logo span { color: var(--blue-mid); }
+  .score-pills { display: flex; gap: 8px; }
+  .pill {
+    padding: 4px 14px;
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--border2);
+    background: var(--surface);
+  }
+  .pill.correct { background: var(--green-light); color: var(--green); border-color: #74C69D; }
+  .pill.wrong   { background: var(--red-light);   color: var(--red);   border-color: #F4A7A9; }
+  .pill.pct     { background: var(--gold-light);  color: var(--gold);  border-color: #F0C040; }
+
+  /* MAIN */
+  .main { max-width: 700px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  /* TENSE SELECTOR */
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 12px;
+  }
+  .tense-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 8px;
+    margin-bottom: 2rem;
+  }
+  .tense-btn {
+    padding: 10px 14px;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+    line-height: 1.4;
+  }
+  .tense-btn:hover { background: var(--surface2); border-color: var(--border2); }
+  .tense-btn.active {
+    background: var(--blue-light);
+    border: 2px solid var(--blue-mid);
+    color: var(--blue);
+  }
+  .tense-btn .tense-num {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--text3);
+    margin-bottom: 2px;
+  }
+  .tense-btn.active .tense-num { color: var(--blue-mid); }
+
+  /* QUIZ CARD */
+  .quiz-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    margin-bottom: 1rem;
+  }
+  .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+  }
+  .tense-badge {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--blue);
+    background: var(--blue-light);
+    border-radius: 99px;
+    padding: 4px 12px;
+  }
+  .q-counter { font-size: 13px; color: var(--text3); }
+  .structure-box {
+    font-family: 'DM Mono', 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--text2);
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 7px 12px;
+    margin-bottom: 1.25rem;
+  }
+  .question-text {
+    font-family: 'Lora', serif;
+    font-size: 19px;
+    color: var(--text);
+    line-height: 1.65;
+    margin-bottom: 0.5rem;
+  }
+  .blank-word {
+    display: inline-block;
+    min-width: 90px;
+    border-bottom: 2.5px solid var(--blue-mid);
+    padding: 0 6px;
+    color: transparent;
+    vertical-align: bottom;
+  }
+  .hint { font-size: 13px; color: var(--text3); margin-bottom: 1.25rem; font-style: italic; }
+
+  .input-row { display: flex; gap: 8px; }
+  .ans-input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    transition: border 0.15s, box-shadow 0.15s;
+  }
+  .ans-input:focus { outline: none; border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(58,123,213,0.15); }
+  .ans-input:disabled { opacity: 0.6; }
+  .check-btn {
+    padding: 10px 22px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--blue);
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .check-btn:hover { background: var(--blue-mid); }
+  .check-btn:active { transform: scale(0.97); }
+  .check-btn:disabled { opacity: 0.4; cursor: default; }
+
+  /* FEEDBACK */
+  .feedback {
+    margin-top: 14px;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    line-height: 1.65;
+    animation: fadeIn 0.2s ease;
+  }
+  .feedback.correct { background: var(--green-light); color: var(--green); border: 1px solid #74C69D; }
+  .feedback.wrong   { background: var(--red-light);   color: var(--red);   border: 1px solid #F4A7A9; }
+  .feedback .correct-ans { font-weight: 600; font-family: 'Lora', serif; }
+  .feedback .expl { margin-top: 6px; font-size: 13px; opacity: 0.85; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+
+  /* NEXT */
+  .next-btn {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: none;
+  }
+  .next-btn:hover { background: var(--surface2); }
+
+  /* START HINT */
+  .start-hint {
+    text-align: center;
+    padding: 3rem 0;
+    color: var(--text3);
+    font-size: 15px;
+  }
+  .start-hint .arrow { font-size: 24px; display: block; margin-bottom: 8px; }
+
+  /* PROGRESS BAR */
+  .progress-bar { height: 3px; background: var(--border); border-radius: 99px; margin-bottom: 1.5rem; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--blue-mid); border-radius: 99px; transition: width 0.4s ease; }
+
+  /* RANDOM BTN */
+  .random-btn {
+    padding: 9px 16px;
+    border: 1.5px dashed var(--border2);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text2);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    width: 100%;
+    margin-bottom: 1.5rem;
+  }
+  .random-btn:hover { background: var(--surface2); }
+
+  @media(max-width:500px){
+    .topbar { padding: 0 1rem; }
+    .main { padding: 1.5rem 1rem 4rem; }
+    .tense-grid { grid-template-columns: 1fr 1fr; }
+    .question-text { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">English<span>Tenses</span></div>
+  <div class="score-pills">
+    <div class="pill correct" id="s-correct">✓ 0</div>
+    <div class="pill wrong"   id="s-wrong">✗ 0</div>
+    <div class="pill pct"     id="s-pct">— %</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="section-label">Choose a tense</div>
+  <div class="tense-grid" id="tense-grid"></div>
+  <button class="random-btn" onclick="randomTense()">🎲 Random tense</button>
+
+  <div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+  <div id="quiz-area"><div class="start-hint"><span class="arrow">☝️</span>Pick a tense above to start practicing</div></div>
+</div>
+
+<script>
+const TENSES = [
+  { id:"sp",   label:"Simple present",             structure:"Subject + V1  (he/she/it → V1+s/es)" },
+  { id:"pc",   label:"Present continuous",         structure:"Subject + am / is / are + V-ing" },
+  { id:"pp",   label:"Present perfect",            structure:"Subject + have / has + V3 (past participle)" },
+  { id:"ppc",  label:"Present perfect continuous", structure:"Subject + have / has been + V-ing" },
+  { id:"past", label:"Simple past",                structure:"Subject + V2  (regular → V+ed)" },
+  { id:"pac",  label:"Past continuous",            structure:"Subject + was / were + V-ing" },
+  { id:"pap",  label:"Past perfect",               structure:"Subject + had + V3 (past participle)" },
+  { id:"papc", label:"Past perfect continuous",    structure:"Subject + had been + V-ing" },
+];
+
+const QUESTIONS = {
+  sp: [
+    { s:"The sun ___ in the east every morning.", a:"rises", hint:"A natural daily fact", expl:"'Rises' is correct because simple present expresses facts and universal truths. Third person singular adds -s." },
+    { s:"She ___ coffee before going to work.", a:"drinks", hint:"A morning routine", expl:"'Drinks' describes a habitual action. Third person singular: drink → drinks." },
+    { s:"My brother ___ at a hospital.", a:"works", hint:"His job or occupation", expl:"Simple present with third person singular adds -s to express a permanent situation." },
+    { s:"Dogs ___ a lot in hot weather.", a:"pant", hint:"What dogs do when it's hot", expl:"'Pant' is the base form for plural subjects. No -s is added with they/dogs." },
+    { s:"Water ___ at 100 degrees Celsius.", a:"boils", hint:"A scientific fact", expl:"Scientific facts use simple present. Third person singular: boil → boils." },
+    { s:"He rarely ___ his homework on time.", a:"finishes", hint:"A bad habit", expl:"'Rarely' signals a habitual pattern. Third person singular: finish → finishes." },
+    { s:"The train ___ at 7:45 every morning.", a:"leaves", hint:"A fixed schedule", expl:"Timetabled events use simple present. Third person singular: leave → leaves." },
+    { s:"They ___ French at their school.", a:"teach", hint:"What those teachers do", expl:"Plural subject (they) takes the base form — no -s." },
+    { s:"My cat ___ all day long.", a:"sleeps", hint:"A very lazy pet", expl:"Habitual action with third person singular: sleep → sleeps." },
+    { s:"She always ___ before bed.", a:"reads", hint:"A bedtime habit", expl:"Simple present for habits/routines. Third person singular: read → reads." },
+  ],
+  pc: [
+    { s:"Listen! The birds ___ outside.", a:"are singing", hint:"You can hear them right now", expl:"'Are singing' is correct because the action is happening at this exact moment. is/are + V-ing." },
+    { s:"I ___ for my final exams this week.", a:"am studying", hint:"Something happening around now", expl:"Present continuous describes actions in progress around the present period." },
+    { s:"She can't talk — she ___ a shower.", a:"is taking", hint:"She's busy right now", expl:"The action is in progress at the moment of speaking: is + taking." },
+    { s:"They ___ a new restaurant downtown.", a:"are opening", hint:"A project happening these days", expl:"Present continuous can describe a current project or changing situation." },
+    { s:"Why ___ you ___ at me like that?", a:"are / looking", hint:"Something happening right now", expl:"Question form: are + subject + V-ing. Describes an action happening at this moment." },
+    { s:"He ___ better since he started therapy.", a:"is getting", hint:"A trend happening lately", expl:"Present continuous expresses a changing/developing situation." },
+    { s:"We ___ for the bus right now.", a:"are waiting", hint:"Currently at the bus stop", expl:"The action is ongoing at the moment of speaking: are + waiting." },
+    { s:"The kids ___ a lot of noise upstairs!", a:"are making", hint:"You can hear it right now", expl:"An action in progress at this moment: are + making." },
+    { s:"My sister ___ in Australia for a year.", a:"is living", hint:"A temporary situation", expl:"Present continuous for temporary situations: is + living." },
+    { s:"The price of food ___ every month.", a:"is rising", hint:"An ongoing trend in the economy", expl:"Present continuous expresses an ongoing change or trend." },
+  ],
+  pp: [
+    { s:"I ___ this movie three times already.", a:"have seen", hint:"Life experience — how many times?", expl:"Present perfect expresses experiences up to now. have + seen (past participle)." },
+    { s:"She ___ her keys somewhere.", a:"has lost", hint:"She can't find them now", expl:"Present perfect for a past action with present consequences. has + lost." },
+    { s:"They ___ to Japan twice.", a:"have been", hint:"Travel experience in their life", expl:"Present perfect for life experiences. have + been (past participle of 'be/go')." },
+    { s:"He ___ yet. The meeting is still going.", a:"hasn't finished", hint:"It's still not done", expl:"Negative present perfect with 'yet' for incomplete actions. hasn't + finished." },
+    { s:"We ___ this problem before.", a:"have never encountered", hint:"It's a completely new situation", expl:"Present perfect with 'never' to describe zero experience. have + never + past participle." },
+    { s:"The government ___ new laws this year.", a:"has introduced", hint:"Recent action in a current period", expl:"'This year' is an unfinished time period, so present perfect is used." },
+    { s:"I ___ my report, so I can relax now.", a:"have finished", hint:"It's done, and there's a present result", expl:"Present perfect: past action with current relevance. have + finished." },
+    { s:"Has she ___ her mind about the job?", a:"changed", hint:"Asking about a recent decision", expl:"Question form: Has + subject + past participle? have + changed." },
+    { s:"The company ___ its headquarters recently.", a:"has moved", hint:"A recent change", expl:"'Recently' signals present perfect. has + moved (past participle)." },
+    { s:"You ___ so much since we last met!", a:"have changed", hint:"Noticing a difference up to now", expl:"Present perfect for change up to the present moment. have + changed." },
+  ],
+  ppc: [
+    { s:"She ___ for two hours and she's exhausted.", a:"has been running", hint:"The activity just stopped, she's tired", expl:"Present perfect continuous shows a recent activity with a present result. has been + running." },
+    { s:"I ___ this novel for weeks and I love it.", a:"have been reading", hint:"Ongoing activity that started in the past", expl:"The action started in the past and continues up to now. have been + reading." },
+    { s:"They ___ together since college.", a:"have been dating", hint:"A relationship that started in the past", expl:"'Since' signals a start point. have been + dating emphasizes ongoing duration." },
+    { s:"He ___ hard all month to get that promotion.", a:"has been working", hint:"Sustained effort leading to a current result", expl:"Present perfect continuous stresses duration and current relevance. has been + working." },
+    { s:"How long ___ you ___ to learn Spanish?", a:"have / been trying", hint:"Asking about the duration of an effort", expl:"Question form: How long + have/has + subject + been + V-ing?" },
+    { s:"It ___ for three days straight.", a:"has been raining", hint:"Non-stop rain, still cloudy outside", expl:"Continuous rain from the past to now: has been + raining." },
+    { s:"We ___ this issue all morning.", a:"have been discussing", hint:"An ongoing meeting or conversation", expl:"Duration of an activity up to now. have been + discussing." },
+    { s:"My eyes hurt because I ___ all night.", a:"have been studying", hint:"Cause and effect of a long activity", expl:"Present perfect continuous explains a current condition through a sustained past activity." },
+    { s:"The kids ___ video games for hours!", a:"have been playing", hint:"Parent noticing the length of play", expl:"The activity has been going on for a long time. have been + playing." },
+    { s:"She ___ for a job since January.", a:"has been looking", hint:"Still searching, not yet hired", expl:"The search started in the past and is still ongoing. has been + looking." },
+  ],
+  past: [
+    { s:"She ___ her keys yesterday.", a:"lost", hint:"It happened yesterday", expl:"Simple past for a completed action at a specific past time. lose → lost (irregular)." },
+    { s:"We ___ dinner at 8 o'clock last night.", a:"had", hint:"A specific time last night", expl:"'Last night' signals simple past. have → had (irregular)." },
+    { s:"He ___ his bike to school every day when he was a child.", a:"rode", hint:"A past habit — no longer true", expl:"Simple past for past habits. ride → rode (irregular)." },
+    { s:"They ___ the test and passed easily.", a:"studied", hint:"Completed before the test", expl:"Completed action in the past. study → studied (regular: consonant+y → ied)." },
+    { s:"I ___ a great movie last Saturday.", a:"watched", hint:"A specific past event", expl:"Completed past action: watch → watched (regular)." },
+    { s:"She ___ English for five years before moving abroad.", a:"studied", hint:"A finished period of study", expl:"Simple past for a completed duration in the past." },
+    { s:"The plane ___ at 6 am this morning.", a:"landed", hint:"A scheduled past event", expl:"Completed event at a past time: land → landed (regular)." },
+    { s:"He ___ a pizza and watched football.", a:"ordered", hint:"Two past events in sequence", expl:"Simple past for sequential completed actions: order → ordered." },
+    { s:"We ___ on vacation to Costa Rica last summer.", a:"went", hint:"A specific past trip", expl:"Simple past: go → went (irregular)." },
+    { s:"She ___ the door and walked in.", a:"opened", hint:"A sequence of past actions", expl:"Completed past action: open → opened (regular)." },
+  ],
+  pac: [
+    { s:"While I ___ a shower, the phone rang.", a:"was taking", hint:"The shower was interrupted", expl:"Past continuous shows a longer action interrupted by a shorter one. was/were + V-ing." },
+    { s:"They ___ football when it started to rain.", a:"were playing", hint:"Rain interrupted the game", expl:"An ongoing past action interrupted by a sudden event. were + playing." },
+    { s:"She ___ all morning, so she didn't hear us come in.", a:"was sleeping", hint:"A long action in progress in the past", expl:"Past continuous for an ongoing background action. was + sleeping." },
+    { s:"What ___ you ___ at 9 pm last night?", a:"were / doing", hint:"Asking about an activity in progress at that moment", expl:"Question in past continuous: What + were + subject + V-ing?" },
+    { s:"I ___ to music when my friend called.", a:"was listening", hint:"The call interrupted the activity", expl:"Past continuous for the action in progress when something else happened." },
+    { s:"While she ___ the report, her computer crashed.", a:"was writing", hint:"The crash happened during the writing", expl:"was + writing describes the longer background action." },
+    { s:"At 3 am, the neighbours ___ loudly.", a:"were arguing", hint:"An ongoing noisy activity at a specific past time", expl:"Past continuous describes an action in progress at a specific past moment." },
+    { s:"He ___ when I arrived, so I waited.", a:"was working", hint:"His work was already happening when you arrived", expl:"Background action in progress when another event occurred. was + working." },
+    { s:"The children ___ when the power went out.", a:"were sleeping", hint:"The power cut happened during sleep", expl:"Past continuous for the ongoing action interrupted. were + sleeping." },
+    { s:"We ___ dinner when we heard the news.", a:"were having", hint:"The news arrived during the meal", expl:"'Were having' shows the meal was in progress. were + having." },
+  ],
+  pap: [
+    { s:"By the time she arrived, everyone ___.", a:"had left", hint:"They left before she arrived", expl:"Past perfect for an action completed before another past event. had + left." },
+    { s:"He was happy because he ___ his exam.", a:"had passed", hint:"Passing happened before the happiness", expl:"Past perfect shows the earlier of two past events. had + passed." },
+    { s:"I ___ that movie before, so I knew the ending.", a:"had seen", hint:"A past experience before a past moment", expl:"'Before' signals the earlier action. had + seen (past participle)." },
+    { s:"They ___ dinner before the guests arrived.", a:"had cooked", hint:"The cooking was done before guests came", expl:"Past perfect for completion before another past moment. had + cooked." },
+    { s:"She realized she ___ her wallet at home.", a:"had left", hint:"Discovered later that something was forgotten", expl:"Past perfect for a past action before the moment of realization. had + left." },
+    { s:"When I got to the cinema, the film already ___.", a:"had started", hint:"Too late — it had already begun", expl:"'Already' with past perfect signals an action before a past reference point. had + started." },
+    { s:"He ___ English before moving to London.", a:"had studied", hint:"Study came before the move", expl:"The studying happened before the move. had + studied." },
+    { s:"We couldn't enter because we ___ our tickets.", a:"hadn't brought", hint:"Forgot something important", expl:"Negative past perfect for something not done before a past point. hadn't + brought." },
+    { s:"By 2020, she ___ three novels.", a:"had written", hint:"Completed before a past year", expl:"'By 2020' marks a past deadline. had + written shows completion before it." },
+    { s:"The patient ___ three surgeries before recovering.", a:"had undergone", hint:"Multiple past events before recovery", expl:"Past perfect for multiple events before another past moment. had + undergone." },
+  ],
+  papc: [
+    { s:"She was tired because she ___ all day.", a:"had been working", hint:"Long effort before the tiredness", expl:"Past perfect continuous stresses duration before a past result. had been + working." },
+    { s:"By the time the rain stopped, we ___ for two hours.", a:"had been waiting", hint:"Long wait before a past event", expl:"Had been + waiting shows the duration of the wait before the rain stopped." },
+    { s:"He ___ to get that role for years before he succeeded.", a:"had been trying", hint:"Long effort before success", expl:"Past perfect continuous for sustained effort before a past moment. had been + trying." },
+    { s:"The kids ___ all afternoon, that's why they were so tired.", a:"had been playing", hint:"Long activity caused past tiredness", expl:"Duration of activity explains a past result. had been + playing." },
+    { s:"She smelled of paint because she ___ the house.", a:"had been painting", hint:"The smell was evidence of the activity", expl:"Past perfect continuous for a recent sustained activity with a past visible result." },
+    { s:"How long ___ they ___ before they broke up?", a:"had / been dating", hint:"Asking about the duration of a past relationship", expl:"Question form: How long + had + subject + been + V-ing?" },
+    { s:"I was exhausted because I ___ all night.", a:"had been studying", hint:"All-night effort before morning", expl:"Past perfect continuous for the cause of a past condition. had been + studying." },
+    { s:"They ___ for hours when they finally found the solution.", a:"had been discussing", hint:"Long discussion before the breakthrough", expl:"Duration of past discussion before a past moment. had been + discussing." },
+    { s:"The ground was wet because it ___ heavily.", a:"had been raining", hint:"Rain before a past observation", expl:"Past perfect continuous for the cause of a past observable result." },
+    { s:"She ___ for the company for 20 years when she retired.", a:"had been working", hint:"Long career before retirement", expl:"had been + working emphasizes duration of service before the past event of retirement." },
+  ],
+};
+
+let sel = null;
+let correct = 0, wrong = 0, total = 0;
+let pool = [], used = [], qCount = 0;
+let answered = false;
+
+// Build tense grid
+const grid = document.getElementById("tense-grid");
+TENSES.forEach((t, i) => {
+  const btn = document.createElement("button");
+  btn.className = "tense-btn";
+  btn.dataset.id = t.id;
+  btn.innerHTML = `<span class="tense-num">0${i+1}</span>${t.label}`;
+  btn.onclick = () => pick(t);
+  grid.appendChild(btn);
+});
+
+function randomTense() {
+  const t = TENSES[Math.floor(Math.random() * TENSES.length)];
+  pick(t);
+}
+
+function pick(t) {
+  sel = t;
+  document.querySelectorAll(".tense-btn").forEach(b => b.classList.toggle("active", b.dataset.id === t.id));
+  pool = [...QUESTIONS[t.id]];
+  used = [];
+  qCount = 0;
+  nextQ();
+}
+
+function nextQ() {
+  if (pool.length === 0) { pool = [...used]; used = []; }
+  const idx = Math.floor(Math.random() * pool.length);
+  const q = pool.splice(idx, 1)[0];
+  used.push(q);
+  qCount++;
+  answered = false;
+  renderQ(q);
+}
+
+function renderQ(q) {
+  const area = document.getElementById("quiz-area");
+  const parts = q.s.split("___");
+  const sentenceHTML = parts[0] + '<span class="blank-word">______</span>' + (parts[1] || "");
+  const allQ = QUESTIONS[sel.id].length;
+  const pct = Math.min(100, Math.round((qCount / allQ) * 100));
+  document.getElementById("prog").style.width = pct + "%";
+
+  area.innerHTML = `
+    <div class="quiz-card">
+      <div class="card-top">
+        <span class="tense-badge">${sel.label}</span>
+        <span class="q-counter">Question ${qCount}</span>
+      </div>
+      <div class="structure-box">${sel.structure}</div>
+      <div class="question-text">${sentenceHTML}</div>
+      <div class="hint">💡 ${q.hint}</div>
+      <div class="input-row">
+        <input class="ans-input" id="ans" placeholder="Type the missing verb form..." autocomplete="off" spellcheck="false"/>
+        <button class="check-btn" id="cbtn" onclick="check()">Check</button>
+      </div>
+      <div id="fb"></div>
+    </div>
+    <button class="next-btn" id="nbtn" onclick="nextQ()">Next question →</button>
+  `;
+  const inp = document.getElementById("ans");
+  inp.focus();
+  inp.addEventListener("keydown", e => { if (e.key === "Enter" && !answered) check(); });
+
+  // store current q
+  area._q = q;
+}
+
+function normalize(s) {
+  return s.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function check() {
+  if (answered) return;
+  const area = document.getElementById("quiz-area");
+  const q = area._q;
+  const inp = document.getElementById("ans");
+  const val = inp.value.trim();
+  if (!val) { inp.focus(); return; }
+
+  answered = true;
+  inp.disabled = true;
+  document.getElementById("cbtn").disabled = true;
+
+  const userN = normalize(val);
+  const correctN = normalize(q.a);
+
+  // Allow some flexibility: exact match OR ignore contractions/spacing
+  const isCorrect = userN === correctN ||
+    userN.replace(/'/g, "") === correctN.replace(/'/g, "") ||
+    // allow haven't vs have not etc
+    userN === correctN.replace("n't", " not") ||
+    correctN === userN.replace("n't", " not");
+
+  total++;
+  if (isCorrect) { correct++; } else { wrong++; }
+  updateScore();
+
+  const fb = document.getElementById("fb");
+  if (isCorrect) {
+    fb.innerHTML = `<div class="feedback correct">
+      ✓ Correct! Well done.
+      <div class="expl">${q.expl}</div>
+    </div>`;
+  } else {
+    fb.innerHTML = `<div class="feedback wrong">
+      ✗ Not quite. The correct answer is: <span class="correct-ans">${q.a}</span>
+      <div class="expl">${q.expl}</div>
+    </div>`;
+  }
+  document.getElementById("nbtn").style.display = "block";
+}
+
+function updateScore() {
+  document.getElementById("s-correct").textContent = "✓ " + correct;
+  document.getElementById("s-wrong").textContent   = "✗ " + wrong;
+  const pct = total ? Math.round(correct / total * 100) : "—";
+  document.getElementById("s-pct").textContent = pct + (total ? " %" : "");
+}
+</script>
+</body>
+</html>
