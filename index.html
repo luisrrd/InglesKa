@@ -78,107 +78,469 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 <script>
 // ── VERB DATA (from Verbos_Irregulares.xlsx) ─────────────────────────────────
-const VERBS = [{"base":"become","past":"became","past_norm":"became","participle":"become","spanish":"convertirse","ing":"becoming","s3":"becomes","type":"irregular"},{"base":"begin","past":"began","past_norm":"began","participle":"begun","spanish":"empezar","ing":"beginning","s3":"begins","type":"irregular"},{"base":"bend","past":"bent","past_norm":"bent","participle":"bent","spanish":"doblar","ing":"bending","s3":"bends","type":"irregular"},{"base":"bet","past":"bet","past_norm":"bet","participle":"bet","spanish":"apostar","ing":"betting","s3":"bets","type":"irregular"},{"base":"bite","past":"bit","past_norm":"bit","participle":"bitten","spanish":"morder","ing":"biting","s3":"bites","type":"irregular"},{"base":"blow","past":"blew","past_norm":"blew","participle":"blown","spanish":"soplar","ing":"blowing","s3":"blows","type":"irregular"},{"base":"break","past":"broke","past_norm":"broke","participle":"broken","spanish":"romper","ing":"breaking","s3":"breaks","type":"irregular"},{"base":"bring","past":"brought","past_norm":"brought","participle":"brought","spanish":"traer","ing":"bringing","s3":"brings","type":"irregular"},{"base":"build","past":"built","past_norm":"built","participle":"built","spanish":"construir","ing":"building","s3":"builds","type":"irregular"},{"base":"buy","past":"bought","past_norm":"bought","participle":"bought","spanish":"comprar","ing":"buying","s3":"buys","type":"irregular"},{"base":"catch","past":"caught","past_norm":"caught","participle":"caught","spanish":"atrapar","ing":"catching","s3":"catches","type":"irregular"},{"base":"choose","past":"chose","past_norm":"chose","participle":"chosen","spanish":"elegir","ing":"choosing","s3":"chooses","type":"irregular"},{"base":"come","past":"came","past_norm":"came","participle":"come","spanish":"venir","ing":"coming","s3":"comes","type":"irregular"},{"base":"cost","past":"cost","past_norm":"cost","participle":"cost","spanish":"costar","ing":"costing","s3":"costs","type":"irregular"},{"base":"cut","past":"cut","past_norm":"cut","participle":"cut","spanish":"cortar","ing":"cutting","s3":"cuts","type":"irregular"},{"base":"do","past":"did","past_norm":"did","participle":"done","spanish":"hacer","ing":"doing","s3":"does","type":"irregular"},{"base":"draw","past":"drew","past_norm":"drew","participle":"drawn","spanish":"dibujar","ing":"drawing","s3":"draws","type":"irregular"},{"base":"dream","past":"dreamed","past_norm":"dreamed","participle":"dreamed","spanish":"soñar","ing":"dreaming","s3":"dreams","type":"irregular"},{"base":"drink","past":"drank","past_norm":"drank","participle":"drunk","spanish":"beber","ing":"drinking","s3":"drinks","type":"irregular"},{"base":"drive","past":"drove","past_norm":"drove","participle":"driven","spanish":"conducir","ing":"driving","s3":"drives","type":"irregular"},{"base":"eat","past":"ate","past_norm":"ate","participle":"eaten","spanish":"comer","ing":"eating","s3":"eats","type":"irregular"},{"base":"fall","past":"fell","past_norm":"fell","participle":"fallen","spanish":"caer","ing":"falling","s3":"falls","type":"irregular"},{"base":"feel","past":"felt","past_norm":"felt","participle":"felt","spanish":"sentir","ing":"feeling","s3":"feels","type":"irregular"},{"base":"fight","past":"fought","past_norm":"fought","participle":"fought","spanish":"pelear","ing":"fighting","s3":"fights","type":"irregular"},{"base":"find","past":"found","past_norm":"found","participle":"found","spanish":"encontrar","ing":"finding","s3":"finds","type":"irregular"},{"base":"fly","past":"flew","past_norm":"flew","participle":"flown","spanish":"volar","ing":"flying","s3":"flies","type":"irregular"},{"base":"forget","past":"forgot","past_norm":"forgot","participle":"forgotten","spanish":"olvidar","ing":"forgetting","s3":"forgets","type":"irregular"},{"base":"forgive","past":"forgave","past_norm":"forgave","participle":"forgiven","spanish":"perdonar","ing":"forgiving","s3":"forgives","type":"irregular"},{"base":"freeze","past":"froze","past_norm":"froze","participle":"frozen","spanish":"congelar","ing":"freezing","s3":"freezes","type":"irregular"},{"base":"get","past":"got","past_norm":"got","participle":"gotten","spanish":"obtener","ing":"getting","s3":"gets","type":"irregular"},{"base":"give","past":"gave","past_norm":"gave","participle":"given","spanish":"dar","ing":"giving","s3":"gives","type":"irregular"},{"base":"go","past":"went","past_norm":"went","participle":"gone","spanish":"ir","ing":"going","s3":"goes","type":"irregular"},{"base":"grow","past":"grew","past_norm":"grew","participle":"grown","spanish":"crecer","ing":"growing","s3":"grows","type":"irregular"},{"base":"hang","past":"hung","past_norm":"hung","participle":"hung","spanish":"colgar","ing":"hanging","s3":"hangs","type":"irregular"},{"base":"have","past":"had","past_norm":"had","participle":"had","spanish":"tener","ing":"having","s3":"has","type":"irregular"},{"base":"hear","past":"heard","past_norm":"heard","participle":"heard","spanish":"escuchar","ing":"hearing","s3":"hears","type":"irregular"},{"base":"hide","past":"hid","past_norm":"hid","participle":"hidden","spanish":"esconder","ing":"hiding","s3":"hides","type":"irregular"},{"base":"hit","past":"hit","past_norm":"hit","participle":"hit","spanish":"golpear","ing":"hitting","s3":"hits","type":"irregular"},{"base":"hold","past":"held","past_norm":"held","participle":"held","spanish":"sostener","ing":"holding","s3":"holds","type":"irregular"},{"base":"hurt","past":"hurt","past_norm":"hurt","participle":"hurt","spanish":"herir","ing":"hurting","s3":"hurts","type":"irregular"},{"base":"keep","past":"kept","past_norm":"kept","participle":"kept","spanish":"mantener","ing":"keeping","s3":"keeps","type":"irregular"},{"base":"know","past":"knew","past_norm":"knew","participle":"known","spanish":"saber","ing":"knowing","s3":"knows","type":"irregular"},{"base":"lay","past":"laid","past_norm":"laid","participle":"laid","spanish":"poner","ing":"laying","s3":"lays","type":"irregular"},{"base":"lead","past":"led","past_norm":"led","participle":"led","spanish":"liderar","ing":"leading","s3":"leads","type":"irregular"},{"base":"learn","past":"learned","past_norm":"learned","participle":"learned","spanish":"aprender","ing":"learning","s3":"learns","type":"irregular"},{"base":"leave","past":"left","past_norm":"left","participle":"left","spanish":"dejar","ing":"leaving","s3":"leaves","type":"irregular"},{"base":"lend","past":"lent","past_norm":"lent","participle":"lent","spanish":"prestar","ing":"lending","s3":"lends","type":"irregular"},{"base":"let","past":"let","past_norm":"let","participle":"let","spanish":"permitir","ing":"letting","s3":"lets","type":"irregular"},{"base":"lose","past":"lost","past_norm":"lost","participle":"lost","spanish":"perder","ing":"losing","s3":"loses","type":"irregular"},{"base":"make","past":"made","past_norm":"made","participle":"made","spanish":"hacer","ing":"making","s3":"makes","type":"irregular"},{"base":"mean","past":"meant","past_norm":"meant","participle":"meant","spanish":"significar","ing":"meaning","s3":"means","type":"irregular"},{"base":"meet","past":"met","past_norm":"met","participle":"met","spanish":"conocer","ing":"meeting","s3":"meets","type":"irregular"},{"base":"pay","past":"paid","past_norm":"paid","participle":"paid","spanish":"pagar","ing":"paying","s3":"pays","type":"irregular"},{"base":"put","past":"put","past_norm":"put","participle":"put","spanish":"poner","ing":"putting","s3":"puts","type":"irregular"},{"base":"read","past":"read","past_norm":"read","participle":"read","spanish":"leer","ing":"reading","s3":"reads","type":"irregular"},{"base":"ride","past":"rode","past_norm":"rode","participle":"ridden","spanish":"montar","ing":"riding","s3":"rides","type":"irregular"},{"base":"ring","past":"rang","past_norm":"rang","participle":"rung","spanish":"sonar","ing":"ringing","s3":"rings","type":"irregular"},{"base":"rise","past":"rose","past_norm":"rose","participle":"risen","spanish":"subir","ing":"rising","s3":"rises","type":"irregular"},{"base":"run","past":"ran","past_norm":"ran","participle":"run","spanish":"correr","ing":"running","s3":"runs","type":"irregular"},{"base":"say","past":"said","past_norm":"said","participle":"said","spanish":"decir","ing":"saying","s3":"says","type":"irregular"},{"base":"see","past":"saw","past_norm":"saw","participle":"seen","spanish":"ver","ing":"seeing","s3":"sees","type":"irregular"},{"base":"sell","past":"sold","past_norm":"sold","participle":"sold","spanish":"vender","ing":"selling","s3":"sells","type":"irregular"},{"base":"send","past":"sent","past_norm":"sent","participle":"sent","spanish":"enviar","ing":"sending","s3":"sends","type":"irregular"},{"base":"set","past":"set","past_norm":"set","participle":"set","spanish":"establecer","ing":"setting","s3":"sets","type":"irregular"},{"base":"shake","past":"shook","past_norm":"shook","participle":"shaken","spanish":"sacudir","ing":"shaking","s3":"shakes","type":"irregular"},{"base":"shine","past":"shone","past_norm":"shone","participle":"shone","spanish":"brillar","ing":"shining","s3":"shines","type":"irregular"},{"base":"shoot","past":"shot","past_norm":"shot","participle":"shot","spanish":"disparar","ing":"shooting","s3":"shoots","type":"irregular"},{"base":"show","past":"showed","past_norm":"showed","participle":"shown","spanish":"mostrar","ing":"showing","s3":"shows","type":"irregular"},{"base":"shut","past":"shut","past_norm":"shut","participle":"shut","spanish":"cerrar","ing":"shutting","s3":"shuts","type":"irregular"},{"base":"sing","past":"sang","past_norm":"sang","participle":"sung","spanish":"cantar","ing":"singing","s3":"sings","type":"irregular"},{"base":"sit","past":"sat","past_norm":"sat","participle":"sat","spanish":"sentarse","ing":"sitting","s3":"sits","type":"irregular"},{"base":"sleep","past":"slept","past_norm":"slept","participle":"slept","spanish":"dormir","ing":"sleeping","s3":"sleeps","type":"irregular"},{"base":"speak","past":"spoke","past_norm":"spoke","participle":"spoken","spanish":"hablar","ing":"speaking","s3":"speaks","type":"irregular"},{"base":"spend","past":"spent","past_norm":"spent","participle":"spent","spanish":"gastar","ing":"spending","s3":"spends","type":"irregular"},{"base":"stand","past":"stood","past_norm":"stood","participle":"stood","spanish":"estar de pie","ing":"standing","s3":"stands","type":"irregular"},{"base":"steal","past":"stole","past_norm":"stole","participle":"stolen","spanish":"robar","ing":"stealing","s3":"steals","type":"irregular"},{"base":"stick","past":"stuck","past_norm":"stuck","participle":"stuck","spanish":"pegar","ing":"sticking","s3":"sticks","type":"irregular"},{"base":"swim","past":"swam","past_norm":"swam","participle":"swum","spanish":"nadar","ing":"swimming","s3":"swims","type":"irregular"},{"base":"take","past":"took","past_norm":"took","participle":"taken","spanish":"tomar","ing":"taking","s3":"takes","type":"irregular"},{"base":"teach","past":"taught","past_norm":"taught","participle":"taught","spanish":"enseñar","ing":"teaching","s3":"teaches","type":"irregular"},{"base":"tell","past":"told","past_norm":"told","participle":"told","spanish":"decir","ing":"telling","s3":"tells","type":"irregular"},{"base":"think","past":"thought","past_norm":"thought","participle":"thought","spanish":"pensar","ing":"thinking","s3":"thinks","type":"irregular"},{"base":"throw","past":"threw","past_norm":"threw","participle":"thrown","spanish":"lanzar","ing":"throwing","s3":"throws","type":"irregular"},{"base":"understand","past":"understood","past_norm":"understood","participle":"understood","spanish":"entender","ing":"understanding","s3":"understands","type":"irregular"},{"base":"wake","past":"woke","past_norm":"woke","participle":"woken","spanish":"despertar","ing":"waking","s3":"wakes","type":"irregular"},{"base":"wear","past":"wore","past_norm":"wore","participle":"worn","spanish":"usar ropa","ing":"wearing","s3":"wears","type":"irregular"},{"base":"win","past":"won","past_norm":"won","participle":"won","spanish":"ganar","ing":"winning","s3":"wins","type":"irregular"},{"base":"write","past":"wrote","past_norm":"wrote","participle":"written","spanish":"escribir","ing":"writing","s3":"writes","type":"irregular"},{"base":"argue","past":"argued","past_norm":"argued","participle":"argued","spanish":"discutir","ing":"arguing","s3":"argues","type":"regular"},{"base":"ask","past":"asked","past_norm":"asked","participle":"asked","spanish":"preguntar","ing":"asking","s3":"asks","type":"regular"},{"base":"believe","past":"believed","past_norm":"believed","participle":"believed","spanish":"creer","ing":"believing","s3":"believes","type":"regular"},{"base":"call","past":"called","past_norm":"called","participle":"called","spanish":"llamar","ing":"calling","s3":"calls","type":"regular"},{"base":"change","past":"changed","past_norm":"changed","participle":"changed","spanish":"cambiar","ing":"changing","s3":"changes","type":"regular"},{"base":"clean","past":"cleaned","past_norm":"cleaned","participle":"cleaned","spanish":"limpiar","ing":"cleaning","s3":"cleans","type":"regular"},{"base":"climb","past":"climbed","past_norm":"climbed","participle":"climbed","spanish":"trepar","ing":"climbing","s3":"climbs","type":"regular"},{"base":"continue","past":"continued","past_norm":"continued","participle":"continued","spanish":"continuar","ing":"continuing","s3":"continues","type":"regular"},{"base":"cook","past":"cooked","past_norm":"cooked","participle":"cooked","spanish":"cocinar","ing":"cooking","s3":"cooks","type":"regular"},{"base":"cry","past":"cried","past_norm":"cried","participle":"cried","spanish":"llorar/gritar","ing":"crying","s3":"cries","type":"regular"},{"base":"decide","past":"decided","past_norm":"decided","participle":"decided","spanish":"decidir","ing":"deciding","s3":"decides","type":"regular"},{"base":"die","past":"died","past_norm":"died","participle":"died","spanish":"morir","ing":"dying","s3":"dies","type":"regular"},{"base":"drop","past":"dropped","past_norm":"dropped","participle":"dropped","spanish":"caer","ing":"dropping","s3":"drops","type":"regular"},{"base":"dry","past":"dried","past_norm":"dried","participle":"dried","spanish":"secar","ing":"drying","s3":"dries","type":"regular"},{"base":"enjoy","past":"enjoyed","past_norm":"enjoyed","participle":"enjoyed","spanish":"disfrutar","ing":"enjoying","s3":"enjoys","type":"regular"},{"base":"finish","past":"finished","past_norm":"finished","participle":"finished","spanish":"terminar","ing":"finishing","s3":"finishes","type":"regular"},{"base":"hate","past":"hated","past_norm":"hated","participle":"hated","spanish":"odiar","ing":"hating","s3":"hates","type":"regular"},{"base":"help","past":"helped","past_norm":"helped","participle":"helped","spanish":"ayudar","ing":"helping","s3":"helps","type":"regular"},{"base":"invite","past":"invited","past_norm":"invited","participle":"invited","spanish":"invitar","ing":"inviting","s3":"invites","type":"regular"},{"base":"join","past":"joined","past_norm":"joined","participle":"joined","spanish":"unir","ing":"joining","s3":"joins","type":"regular"},{"base":"jump","past":"jumped","past_norm":"jumped","participle":"jumped","spanish":"saltar","ing":"jumping","s3":"jumps","type":"regular"},{"base":"kick","past":"kicked","past_norm":"kicked","participle":"kicked","spanish":"patear","ing":"kicking","s3":"kicks","type":"regular"},{"base":"kill","past":"killed","past_norm":"killed","participle":"killed","spanish":"matar","ing":"killing","s3":"kills","type":"regular"},{"base":"kiss","past":"kissed","past_norm":"kissed","participle":"kissed","spanish":"besar","ing":"kissing","s3":"kisses","type":"regular"},{"base":"laugh","past":"laughed","past_norm":"laughed","participle":"laughed","spanish":"reír","ing":"laughing","s3":"laughs","type":"regular"},{"base":"like","past":"liked","past_norm":"liked","participle":"liked","spanish":"gustar","ing":"liking","s3":"likes","type":"regular"},{"base":"live","past":"lived","past_norm":"lived","participle":"lived","spanish":"vivir","ing":"living","s3":"lives","type":"regular"},{"base":"look","past":"looked","past_norm":"looked","participle":"looked","spanish":"mirar","ing":"looking","s3":"looks","type":"regular"},{"base":"love","past":"loved","past_norm":"loved","participle":"loved","spanish":"amar","ing":"loving","s3":"loves","type":"regular"},{"base":"marry","past":"married","past_norm":"married","participle":"married","spanish":"casar","ing":"marrying","s3":"marries","type":"regular"},{"base":"mix","past":"mixed","past_norm":"mixed","participle":"mixed","spanish":"mezclar","ing":"mixing","s3":"mixes","type":"regular"},{"base":"move","past":"moved","past_norm":"moved","participle":"moved","spanish":"mover","ing":"moving","s3":"moves","type":"regular"},{"base":"melt","past":"melted","past_norm":"melted","participle":"melted","spanish":"derretir","ing":"melting","s3":"melts","type":"regular"},{"base":"miss","past":"missed","past_norm":"missed","participle":"missed","spanish":"extrañar","ing":"missing","s3":"misses","type":"regular"},{"base":"need","past":"needed","past_norm":"needed","participle":"needed","spanish":"necesitar","ing":"needing","s3":"needs","type":"regular"},{"base":"open","past":"opened","past_norm":"opened","participle":"opened","spanish":"abrir","ing":"opening","s3":"opens","type":"regular"},{"base":"pass","past":"passed","past_norm":"passed","participle":"passed","spanish":"pasar","ing":"passing","s3":"passes","type":"regular"},{"base":"play","past":"played","past_norm":"played","participle":"played","spanish":"jugar","ing":"playing","s3":"plays","type":"regular"},{"base":"promise","past":"promised","past_norm":"promised","participle":"promised","spanish":"prometer","ing":"promising","s3":"promises","type":"regular"},{"base":"remember","past":"remembered","past_norm":"remembered","participle":"remembered","spanish":"recordar","ing":"remembering","s3":"remembers","type":"regular"},{"base":"return","past":"returned","past_norm":"returned","participle":"returned","spanish":"devolver","ing":"returning","s3":"returns","type":"regular"},{"base":"shout","past":"shouted","past_norm":"shouted","participle":"shouted","spanish":"gritar","ing":"shouting","s3":"shouts","type":"regular"},{"base":"smell","past":"smelled","past_norm":"smelled","participle":"smelled","spanish":"oler","ing":"smelling","s3":"smells","type":"regular"},{"base":"smile","past":"smiled","past_norm":"smiled","participle":"smiled","spanish":"sonreír","ing":"smiling","s3":"smiles","type":"regular"},{"base":"spell","past":"spelled","past_norm":"spelled","participle":"spelled","spanish":"deletrear","ing":"spelling","s3":"spells","type":"regular"},{"base":"start","past":"started","past_norm":"started","participle":"started","spanish":"empezar","ing":"starting","s3":"starts","type":"regular"},{"base":"stay","past":"stayed","past_norm":"stayed","participle":"stayed","spanish":"quedar","ing":"staying","s3":"stays","type":"regular"},{"base":"stop","past":"stopped","past_norm":"stopped","participle":"stopped","spanish":"parar","ing":"stopping","s3":"stops","type":"regular"},{"base":"study","past":"studied","past_norm":"studied","participle":"studied","spanish":"estudiar","ing":"studying","s3":"studies","type":"regular"},{"base":"talk","past":"talked","past_norm":"talked","participle":"talked","spanish":"hablar","ing":"talking","s3":"talks","type":"regular"},{"base":"touch","past":"touched","past_norm":"touched","participle":"touched","spanish":"tocar","ing":"touching","s3":"touches","type":"regular"},{"base":"travel","past":"traveled","past_norm":"traveled","participle":"traveled","spanish":"viajar","ing":"traveling","s3":"travels","type":"regular"},{"base":"try","past":"tried","past_norm":"tried","participle":"tried","spanish":"probar","ing":"trying","s3":"tries","type":"regular"},{"base":"turn","past":"turned","past_norm":"turned","participle":"turned","spanish":"girar","ing":"turning","s3":"turns","type":"regular"},{"base":"use","past":"used","past_norm":"used","participle":"used","spanish":"usar","ing":"using","s3":"uses","type":"regular"},{"base":"want","past":"wanted","past_norm":"wanted","participle":"wanted","spanish":"querer","ing":"wanting","s3":"wants","type":"regular"},{"base":"watch","past":"watched","past_norm":"watched","participle":"watched","spanish":"ver","ing":"watching","s3":"watches","type":"regular"},{"base":"wish","past":"wished","past_norm":"wished","participle":"wished","spanish":"desear","ing":"wishing","s3":"wishes","type":"regular"},{"base":"work","past":"worked","past_norm":"worked","participle":"worked","spanish":"trabajar","ing":"working","s3":"works","type":"regular"}];
+const VERBS = [
+  {base:"become",past:"became",past_norm:"became",participle:"become",spanish:"convertirse",ing:"becoming",s3:"becomes",type:"irregular"},
+  {base:"begin",past:"began",past_norm:"began",participle:"begun",spanish:"empezar",ing:"beginning",s3:"begins",type:"irregular"},
+  {base:"bite",past:"bit",past_norm:"bit",participle:"bitten",spanish:"morder",ing:"biting",s3:"bites",type:"irregular"},
+  {base:"blow",past:"blew",past_norm:"blew",participle:"blown",spanish:"soplar",ing:"blowing",s3:"blows",type:"irregular"},
+  {base:"break",past:"broke",past_norm:"broke",participle:"broken",spanish:"romper",ing:"breaking",s3:"breaks",type:"irregular"},
+  {base:"bring",past:"brought",past_norm:"brought",participle:"brought",spanish:"traer",ing:"bringing",s3:"brings",type:"irregular"},
+  {base:"build",past:"built",past_norm:"built",participle:"built",spanish:"construir",ing:"building",s3:"builds",type:"irregular"},
+  {base:"buy",past:"bought",past_norm:"bought",participle:"bought",spanish:"comprar",ing:"buying",s3:"buys",type:"irregular"},
+  {base:"catch",past:"caught",past_norm:"caught",participle:"caught",spanish:"atrapar",ing:"catching",s3:"catches",type:"irregular"},
+  {base:"choose",past:"chose",past_norm:"chose",participle:"chosen",spanish:"elegir",ing:"choosing",s3:"chooses",type:"irregular"},
+  {base:"come",past:"came",past_norm:"came",participle:"come",spanish:"venir",ing:"coming",s3:"comes",type:"irregular"},
+  {base:"cost",past:"cost",past_norm:"cost",participle:"cost",spanish:"costar",ing:"costing",s3:"costs",type:"irregular"},
+  {base:"cut",past:"cut",past_norm:"cut",participle:"cut",spanish:"cortar",ing:"cutting",s3:"cuts",type:"irregular"},
+  {base:"do",past:"did",past_norm:"did",participle:"done",spanish:"hacer",ing:"doing",s3:"does",type:"irregular"},
+  {base:"draw",past:"drew",past_norm:"drew",participle:"drawn",spanish:"dibujar",ing:"drawing",s3:"draws",type:"irregular"},
+  {base:"drink",past:"drank",past_norm:"drank",participle:"drunk",spanish:"beber",ing:"drinking",s3:"drinks",type:"irregular"},
+  {base:"drive",past:"drove",past_norm:"drove",participle:"driven",spanish:"conducir",ing:"driving",s3:"drives",type:"irregular"},
+  {base:"eat",past:"ate",past_norm:"ate",participle:"eaten",spanish:"comer",ing:"eating",s3:"eats",type:"irregular"},
+  {base:"fall",past:"fell",past_norm:"fell",participle:"fallen",spanish:"caer",ing:"falling",s3:"falls",type:"irregular"},
+  {base:"feel",past:"felt",past_norm:"felt",participle:"felt",spanish:"sentir",ing:"feeling",s3:"feels",type:"irregular"},
+  {base:"find",past:"found",past_norm:"found",participle:"found",spanish:"encontrar",ing:"finding",s3:"finds",type:"irregular"},
+  {base:"fly",past:"flew",past_norm:"flew",participle:"flown",spanish:"volar",ing:"flying",s3:"flies",type:"irregular"},
+  {base:"forget",past:"forgot",past_norm:"forgot",participle:"forgotten",spanish:"olvidar",ing:"forgetting",s3:"forgets",type:"irregular"},
+  {base:"freeze",past:"froze",past_norm:"froze",participle:"frozen",spanish:"congelar",ing:"freezing",s3:"freezes",type:"irregular"},
+  {base:"get",past:"got",past_norm:"got",participle:"gotten",spanish:"obtener",ing:"getting",s3:"gets",type:"irregular"},
+  {base:"give",past:"gave",past_norm:"gave",participle:"given",spanish:"dar",ing:"giving",s3:"gives",type:"irregular"},
+  {base:"go",past:"went",past_norm:"went",participle:"gone",spanish:"ir",ing:"going",s3:"goes",type:"irregular"},
+  {base:"grow",past:"grew",past_norm:"grew",participle:"grown",spanish:"crecer",ing:"growing",s3:"grows",type:"irregular"},
+  {base:"have",past:"had",past_norm:"had",participle:"had",spanish:"tener",ing:"having",s3:"has",type:"irregular"},
+  {base:"hear",past:"heard",past_norm:"heard",participle:"heard",spanish:"escuchar",ing:"hearing",s3:"hears",type:"irregular"},
+  {base:"hide",past:"hid",past_norm:"hid",participle:"hidden",spanish:"esconder",ing:"hiding",s3:"hides",type:"irregular"},
+  {base:"hit",past:"hit",past_norm:"hit",participle:"hit",spanish:"golpear",ing:"hitting",s3:"hits",type:"irregular"},
+  {base:"hold",past:"held",past_norm:"held",participle:"held",spanish:"sostener",ing:"holding",s3:"holds",type:"irregular"},
+  {base:"hurt",past:"hurt",past_norm:"hurt",participle:"hurt",spanish:"herir",ing:"hurting",s3:"hurts",type:"irregular"},
+  {base:"keep",past:"kept",past_norm:"kept",participle:"kept",spanish:"mantener",ing:"keeping",s3:"keeps",type:"irregular"},
+  {base:"know",past:"knew",past_norm:"knew",participle:"known",spanish:"saber",ing:"knowing",s3:"knows",type:"irregular"},
+  {base:"leave",past:"left",past_norm:"left",participle:"left",spanish:"dejar/salir",ing:"leaving",s3:"leaves",type:"irregular"},
+  {base:"lend",past:"lent",past_norm:"lent",participle:"lent",spanish:"prestar",ing:"lending",s3:"lends",type:"irregular"},
+  {base:"lose",past:"lost",past_norm:"lost",participle:"lost",spanish:"perder",ing:"losing",s3:"loses",type:"irregular"},
+  {base:"make",past:"made",past_norm:"made",participle:"made",spanish:"hacer/preparar",ing:"making",s3:"makes",type:"irregular"},
+  {base:"meet",past:"met",past_norm:"met",participle:"met",spanish:"conocer/reunirse",ing:"meeting",s3:"meets",type:"irregular"},
+  {base:"pay",past:"paid",past_norm:"paid",participle:"paid",spanish:"pagar",ing:"paying",s3:"pays",type:"irregular"},
+  {base:"put",past:"put",past_norm:"put",participle:"put",spanish:"poner",ing:"putting",s3:"puts",type:"irregular"},
+  {base:"read",past:"read",past_norm:"read",participle:"read",spanish:"leer",ing:"reading",s3:"reads",type:"irregular"},
+  {base:"ride",past:"rode",past_norm:"rode",participle:"ridden",spanish:"montar",ing:"riding",s3:"rides",type:"irregular"},
+  {base:"run",past:"ran",past_norm:"ran",participle:"run",spanish:"correr",ing:"running",s3:"runs",type:"irregular"},
+  {base:"say",past:"said",past_norm:"said",participle:"said",spanish:"decir",ing:"saying",s3:"says",type:"irregular"},
+  {base:"see",past:"saw",past_norm:"saw",participle:"seen",spanish:"ver",ing:"seeing",s3:"sees",type:"irregular"},
+  {base:"sell",past:"sold",past_norm:"sold",participle:"sold",spanish:"vender",ing:"selling",s3:"sells",type:"irregular"},
+  {base:"send",past:"sent",past_norm:"sent",participle:"sent",spanish:"enviar",ing:"sending",s3:"sends",type:"irregular"},
+  {base:"sing",past:"sang",past_norm:"sang",participle:"sung",spanish:"cantar",ing:"singing",s3:"sings",type:"irregular"},
+  {base:"sit",past:"sat",past_norm:"sat",participle:"sat",spanish:"sentarse",ing:"sitting",s3:"sits",type:"irregular"},
+  {base:"sleep",past:"slept",past_norm:"slept",participle:"slept",spanish:"dormir",ing:"sleeping",s3:"sleeps",type:"irregular"},
+  {base:"speak",past:"spoke",past_norm:"spoke",participle:"spoken",spanish:"hablar",ing:"speaking",s3:"speaks",type:"irregular"},
+  {base:"spend",past:"spent",past_norm:"spent",participle:"spent",spanish:"gastar/pasar tiempo",ing:"spending",s3:"spends",type:"irregular"},
+  {base:"stand",past:"stood",past_norm:"stood",participle:"stood",spanish:"estar de pie",ing:"standing",s3:"stands",type:"irregular"},
+  {base:"steal",past:"stole",past_norm:"stole",participle:"stolen",spanish:"robar",ing:"stealing",s3:"steals",type:"irregular"},
+  {base:"swim",past:"swam",past_norm:"swam",participle:"swum",spanish:"nadar",ing:"swimming",s3:"swims",type:"irregular"},
+  {base:"take",past:"took",past_norm:"took",participle:"taken",spanish:"tomar/llevar",ing:"taking",s3:"takes",type:"irregular"},
+  {base:"teach",past:"taught",past_norm:"taught",participle:"taught",spanish:"enseñar",ing:"teaching",s3:"teaches",type:"irregular"},
+  {base:"tell",past:"told",past_norm:"told",participle:"told",spanish:"decir/contar",ing:"telling",s3:"tells",type:"irregular"},
+  {base:"think",past:"thought",past_norm:"thought",participle:"thought",spanish:"pensar",ing:"thinking",s3:"thinks",type:"irregular"},
+  {base:"throw",past:"threw",past_norm:"threw",participle:"thrown",spanish:"lanzar",ing:"throwing",s3:"throws",type:"irregular"},
+  {base:"understand",past:"understood",past_norm:"understood",participle:"understood",spanish:"entender",ing:"understanding",s3:"understands",type:"irregular"},
+  {base:"wake",past:"woke",past_norm:"woke",participle:"woken",spanish:"despertar",ing:"waking",s3:"wakes",type:"irregular"},
+  {base:"wear",past:"wore",past_norm:"wore",participle:"worn",spanish:"llevar puesto",ing:"wearing",s3:"wears",type:"irregular"},
+  {base:"win",past:"won",past_norm:"won",participle:"won",spanish:"ganar",ing:"winning",s3:"wins",type:"irregular"},
+  {base:"write",past:"wrote",past_norm:"wrote",participle:"written",spanish:"escribir",ing:"writing",s3:"writes",type:"irregular"},
+  {base:"ask",past:"asked",past_norm:"asked",participle:"asked",spanish:"preguntar/pedir",ing:"asking",s3:"asks",type:"regular"},
+  {base:"believe",past:"believed",past_norm:"believed",participle:"believed",spanish:"creer",ing:"believing",s3:"believes",type:"regular"},
+  {base:"call",past:"called",past_norm:"called",participle:"called",spanish:"llamar",ing:"calling",s3:"calls",type:"regular"},
+  {base:"change",past:"changed",past_norm:"changed",participle:"changed",spanish:"cambiar",ing:"changing",s3:"changes",type:"regular"},
+  {base:"clean",past:"cleaned",past_norm:"cleaned",participle:"cleaned",spanish:"limpiar",ing:"cleaning",s3:"cleans",type:"regular"},
+  {base:"climb",past:"climbed",past_norm:"climbed",participle:"climbed",spanish:"escalar/trepar",ing:"climbing",s3:"climbs",type:"regular"},
+  {base:"cook",past:"cooked",past_norm:"cooked",participle:"cooked",spanish:"cocinar",ing:"cooking",s3:"cooks",type:"regular"},
+  {base:"cry",past:"cried",past_norm:"cried",participle:"cried",spanish:"llorar",ing:"crying",s3:"cries",type:"regular"},
+  {base:"decide",past:"decided",past_norm:"decided",participle:"decided",spanish:"decidir",ing:"deciding",s3:"decides",type:"regular"},
+  {base:"drop",past:"dropped",past_norm:"dropped",participle:"dropped",spanish:"dejar caer",ing:"dropping",s3:"drops",type:"regular"},
+  {base:"enjoy",past:"enjoyed",past_norm:"enjoyed",participle:"enjoyed",spanish:"disfrutar",ing:"enjoying",s3:"enjoys",type:"regular"},
+  {base:"finish",past:"finished",past_norm:"finished",participle:"finished",spanish:"terminar",ing:"finishing",s3:"finishes",type:"regular"},
+  {base:"help",past:"helped",past_norm:"helped",participle:"helped",spanish:"ayudar",ing:"helping",s3:"helps",type:"regular"},
+  {base:"invite",past:"invited",past_norm:"invited",participle:"invited",spanish:"invitar",ing:"inviting",s3:"invites",type:"regular"},
+  {base:"join",past:"joined",past_norm:"joined",participle:"joined",spanish:"unirse",ing:"joining",s3:"joins",type:"regular"},
+  {base:"jump",past:"jumped",past_norm:"jumped",participle:"jumped",spanish:"saltar",ing:"jumping",s3:"jumps",type:"regular"},
+  {base:"laugh",past:"laughed",past_norm:"laughed",participle:"laughed",spanish:"reírse",ing:"laughing",s3:"laughs",type:"regular"},
+  {base:"like",past:"liked",past_norm:"liked",participle:"liked",spanish:"gustar",ing:"liking",s3:"likes",type:"regular"},
+  {base:"live",past:"lived",past_norm:"lived",participle:"lived",spanish:"vivir",ing:"living",s3:"lives",type:"regular"},
+  {base:"look",past:"looked",past_norm:"looked",participle:"looked",spanish:"mirar/buscar",ing:"looking",s3:"looks",type:"regular"},
+  {base:"love",past:"loved",past_norm:"loved",participle:"loved",spanish:"amar/encantar",ing:"loving",s3:"loves",type:"regular"},
+  {base:"move",past:"moved",past_norm:"moved",participle:"moved",spanish:"moverse/mudarse",ing:"moving",s3:"moves",type:"regular"},
+  {base:"need",past:"needed",past_norm:"needed",participle:"needed",spanish:"necesitar",ing:"needing",s3:"needs",type:"regular"},
+  {base:"open",past:"opened",past_norm:"opened",participle:"opened",spanish:"abrir",ing:"opening",s3:"opens",type:"regular"},
+  {base:"play",past:"played",past_norm:"played",participle:"played",spanish:"jugar/tocar",ing:"playing",s3:"plays",type:"regular"},
+  {base:"promise",past:"promised",past_norm:"promised",participle:"promised",spanish:"prometer",ing:"promising",s3:"promises",type:"regular"},
+  {base:"remember",past:"remembered",past_norm:"remembered",participle:"remembered",spanish:"recordar",ing:"remembering",s3:"remembers",type:"regular"},
+  {base:"return",past:"returned",past_norm:"returned",participle:"returned",spanish:"volver/devolver",ing:"returning",s3:"returns",type:"regular"},
+  {base:"smile",past:"smiled",past_norm:"smiled",participle:"smiled",spanish:"sonreír",ing:"smiling",s3:"smiles",type:"regular"},
+  {base:"start",past:"started",past_norm:"started",participle:"started",spanish:"empezar",ing:"starting",s3:"starts",type:"regular"},
+  {base:"stay",past:"stayed",past_norm:"stayed",participle:"stayed",spanish:"quedarse",ing:"staying",s3:"stays",type:"regular"},
+  {base:"stop",past:"stopped",past_norm:"stopped",participle:"stopped",spanish:"parar/dejar de",ing:"stopping",s3:"stops",type:"regular"},
+  {base:"study",past:"studied",past_norm:"studied",participle:"studied",spanish:"estudiar",ing:"studying",s3:"studies",type:"regular"},
+  {base:"talk",past:"talked",past_norm:"talked",participle:"talked",spanish:"hablar/conversar",ing:"talking",s3:"talks",type:"regular"},
+  {base:"travel",past:"traveled",past_norm:"traveled",participle:"traveled",spanish:"viajar",ing:"traveling",s3:"travels",type:"regular"},
+  {base:"try",past:"tried",past_norm:"tried",participle:"tried",spanish:"intentar/probar",ing:"trying",s3:"tries",type:"regular"},
+  {base:"use",past:"used",past_norm:"used",participle:"used",spanish:"usar/utilizar",ing:"using",s3:"uses",type:"regular"},
+  {base:"want",past:"wanted",past_norm:"wanted",participle:"wanted",spanish:"querer/desear",ing:"wanting",s3:"wants",type:"regular"},
+  {base:"watch",past:"watched",past_norm:"watched",participle:"watched",spanish:"ver/mirar",ing:"watching",s3:"watches",type:"regular"},
+  {base:"work",past:"worked",past_norm:"worked",participle:"worked",spanish:"trabajar/funcionar",ing:"working",s3:"works",type:"regular"},
+];
 
 // ── TENSE CONFIG ──────────────────────────────────────────────────────────────
-// Each template: { s: sentence (use ___ for blank, {sp} for Spanish),
-//                  ans: fn(v)=>string, hint: string, expl: fn(v)=>string }
+// Each template generates a sentence using the verb.
+// ans(v) returns the expected answer. expl(v) returns the explanation.
+// Sentences are natural and contextualised. {sp} is replaced with the Spanish translation.
 const TENSES = [
+
   { id:'sp', label:'Present Simple', structure:'Subject + V1  (he/she/it → V1+s/es)',
     templates:[
-      { s:'I usually ___ ({sp}) every day.',       ans:v=>v.base,   hint:'Habitual action (subject: I)',      expl:v=>`'${v.base}' is the base form used with I/you/we/they for habits and routines.` },
-      { s:'She ___ ({sp}) all the time.',           ans:v=>v.s3,    hint:'Routine of a third person (she)',   expl:v=>`Third person singular adds -s/es: ${v.base} → ${v.s3}.` },
-      { s:'They ___ ({sp}) a lot.',                 ans:v=>v.base,  hint:'Frequent action (subject: they)',   expl:v=>`Plural subject (they) takes the base form: ${v.base}.` },
-      { s:'He ___ ({sp}) at his job every day.',    ans:v=>v.s3,    hint:'Regular activity of someone (he)',  expl:v=>`Third person singular: ${v.base} → ${v.s3}.` },
-      { s:'My parents ___ ({sp}) every weekend.',   ans:v=>v.base,  hint:'Family routine (subject: they)',    expl:v=>`Plural subject (my parents) takes the base form: ${v.base}.` },
+      { s: 'My neighbour ___ ({sp}) every single morning — it\'s her routine.',
+        ans: v => v.s3,
+        hint: 'A third-person habit (she/he)',
+        expl: v => `Third person singular adds -s/es to the base form: ${v.base} → ${v.s3}. Simple present is used for habits and routines.` },
+      { s: 'I always ___ ({sp}) when I need to relax.',
+        ans: v => v.base,
+        hint: 'A personal habit (I)',
+        expl: v => `With I/you/we/they, use the base form: ${v.base}. Simple present expresses personal habits.` },
+      { s: 'Scientists say that water ___ ({sp}) at 100°C.',
+        ans: v => v.s3,
+        hint: 'A universal fact (it/water)',
+        expl: v => `Simple present is used for facts and scientific truths. Third person singular: ${v.base} → ${v.s3}.` },
+      { s: 'The company ___ ({sp}) products to over 50 countries.',
+        ans: v => v.s3,
+        hint: 'A permanent situation (the company = it)',
+        expl: v => `Third person singular for ongoing or permanent situations: ${v.base} → ${v.s3}.` },
+      { s: 'Most students ___ ({sp}) more than they think.',
+        ans: v => v.base,
+        hint: 'A general truth about a group (they)',
+        expl: v => `Plural subject takes the base form: ${v.base}. Simple present expresses general truths.` },
+      { s: 'My dog ___ ({sp}) every time I come home.',
+        ans: v => v.s3,
+        hint: 'A repeated action (he/she/it)',
+        expl: v => `Third person singular for repeated behaviour: ${v.base} → ${v.s3}.` },
+      { s: 'Doctors recommend that everyone ___ ({sp}) regularly.',
+        ans: v => v.base,
+        hint: 'General recommendation (everyone = they form)',
+        expl: v => `After "recommend that", use the base form. General advice uses simple present: ${v.base}.` },
     ]},
+
   { id:'pc', label:'Present Continuous', structure:'Subject + am/is/are + V-ing',
     templates:[
-      { s:'Right now, I ___ ({sp}).',               ans:v=>`am ${v.ing}`,  hint:'Action happening at this moment (I)',    expl:v=>`Present continuous: I + am + V-ing → am ${v.ing}.` },
-      { s:'She ___ ({sp}) at the moment.',          ans:v=>`is ${v.ing}`,  hint:'In progress right now (she)',            expl:v=>`Present continuous: she + is + V-ing → is ${v.ing}.` },
-      { s:'They ___ ({sp}) right now.',             ans:v=>`are ${v.ing}`, hint:'Ongoing action (subject: they)',          expl:v=>`Present continuous: they + are + V-ing → are ${v.ing}.` },
-      { s:'Look! He ___ ({sp}).',                   ans:v=>`is ${v.ing}`,  hint:'Something visible happening now (he)',   expl:v=>`is + V-ing describes an action in progress: is ${v.ing}.` },
-      { s:'We ___ ({sp}) this week.',               ans:v=>`are ${v.ing}`, hint:'Temporary activity around now (we)',      expl:v=>`are + V-ing for a temporary activity: are ${v.ing}.` },
+      { s: 'Can you call back later? I ___ ({sp}) right now.',
+        ans: v => `am ${v.ing}`,
+        hint: 'Action in progress at this exact moment (I)',
+        expl: v => `am + V-ing for an action happening at the moment of speaking: am ${v.ing}.` },
+      { s: 'Don\'t disturb her — she ___ ({sp}) and needs to concentrate.',
+        ans: v => `is ${v.ing}`,
+        hint: 'Ongoing action, do not interrupt (she)',
+        expl: v => `is + V-ing for an action in progress right now: is ${v.ing}.` },
+      { s: 'The whole team ___ ({sp}) on the new project this month.',
+        ans: v => `is ${v.ing}`,
+        hint: 'Temporary activity happening around now (the team = it)',
+        expl: v => `Present continuous for a temporary activity in the current period: is ${v.ing}.` },
+      { s: 'Look out the window — the kids ___ ({sp}) in the garden!',
+        ans: v => `are ${v.ing}`,
+        hint: 'Something you can see happening right now (they)',
+        expl: v => `are + V-ing describes something visible and happening at this moment: are ${v.ing}.` },
+      { s: 'Things ___ ({sp}) fast in this industry — it\'s hard to keep up.',
+        ans: v => `are ${v.ing}`,
+        hint: 'A trend or change happening in the present period',
+        expl: v => `Present continuous expresses a changing or developing situation: are ${v.ing}.` },
+      { s: 'My brother ___ ({sp}) for a new job — he\'s had enough of his current one.',
+        ans: v => `is ${v.ing}`,
+        hint: 'An ongoing personal situation at the moment (he)',
+        expl: v => `is + V-ing for a temporary ongoing situation: is ${v.ing}.` },
     ]},
+
   { id:'pp', label:'Present Perfect', structure:'Subject + have/has + V3 (past participle)',
     templates:[
-      { s:'I ___ ({sp}) many times.',               ans:v=>`have ${v.participle}`, hint:'Life experience (subject: I)',           expl:v=>`Present perfect: have + past participle → have ${v.participle}.` },
-      { s:'She ___ ({sp}) already.',                ans:v=>`has ${v.participle}`,  hint:'Completed action with present result',   expl:v=>`has + past participle: has ${v.participle}.` },
-      { s:'They ___ ({sp}) recently.',              ans:v=>`have ${v.participle}`, hint:'Recent past action (they)',               expl:v=>`have + past participle: have ${v.participle}.` },
-      { s:'He never ___ ({sp}) before.',            ans:v=>`has ${v.participle}`,  hint:'Zero experience up to now (he)',         expl:v=>`has + past participle for past experience: has ${v.participle}.` },
-      { s:'We ___ just ___ ({sp}).',                ans:v=>`have / ${v.participle}`,hint:"'Just' signals very recent action",     expl:v=>`have + just + past participle: have just ${v.participle}.` },
+      { s: 'Wow, I can\'t believe I ___ ({sp}) for the first time — it\'s amazing!',
+        ans: v => `have ${v.participle}`,
+        hint: 'A new life experience just had (I)',
+        expl: v => `have + past participle for a new personal experience: have ${v.participle}.` },
+      { s: 'She looks exhausted. She ___ ({sp}) all day without a break.',
+        ans: v => `has ${v.participle}`,
+        hint: 'Past action with a visible present result (she)',
+        expl: v => `has + past participle: a past action that explains the present state: has ${v.participle}.` },
+      { s: 'The police ___ ({sp}) the missing documents.',
+        ans: v => `have ${v.participle}`,
+        hint: 'Recent completed action, result matters now (they)',
+        expl: v => `have + past participle for a recently completed action with current relevance: have ${v.participle}.` },
+      { s: 'I\'m not hungry, thanks — I ___ just ___ ({sp}).',
+        ans: v => `have / ${v.participle}`,
+        hint: "'Just' = very recently completed",
+        expl: v => `have just + past participle: an action completed a short time ago: have just ${v.participle}.` },
+      { s: 'He\'s very experienced — he ___ ({sp}) in more than twenty countries.',
+        ans: v => `has ${v.participle}`,
+        hint: 'Accumulated experience over a lifetime (he)',
+        expl: v => `has + past participle for life experiences accumulated up to now: has ${v.participle}.` },
+      { s: 'This is the best film I ___ ({sp}) in years.',
+        ans: v => `have ${v.participle}`,
+        hint: 'Comparing to all past experiences up to now',
+        expl: v => `have + past participle used with superlatives to evaluate past experience: have ${v.participle}.` },
+      { s: 'She\'s not at her desk — she ___ ({sp}) for the day.',
+        ans: v => `has ${v.participle}`,
+        hint: 'An action whose result is noticeable now (she)',
+        expl: v => `has + past participle: the present consequence of a past action: has ${v.participle}.` },
     ]},
+
   { id:'ppc', label:'Present Perfect Continuous', structure:'Subject + have/has been + V-ing',
     templates:[
-      { s:'I ___ ({sp}) for two hours.',            ans:v=>`have been ${v.ing}`, hint:'Duration of an ongoing activity (I)',     expl:v=>`have been + V-ing shows duration: have been ${v.ing}.` },
-      { s:'She ___ ({sp}) all morning.',            ans:v=>`has been ${v.ing}`,  hint:'Activity in progress, still ongoing',     expl:v=>`has been + V-ing: has been ${v.ing}.` },
-      { s:'They ___ ({sp}) since 9 am.',            ans:v=>`have been ${v.ing}`, hint:"'Since' = start point of an activity",    expl:v=>`have been + V-ing for duration since a start point: have been ${v.ing}.` },
-      { s:'He ___ ({sp}) all week.',                ans:v=>`has been ${v.ing}`,  hint:'Sustained effort this week (he)',         expl:v=>`has been + V-ing: has been ${v.ing}.` },
-      { s:'We ___ ({sp}) for months now.',          ans:v=>`have been ${v.ing}`, hint:'Ongoing situation for a long time',       expl:v=>`have been + V-ing for long duration: have been ${v.ing}.` },
+      { s: 'I\'m covered in paint because I ___ ({sp}) all afternoon.',
+        ans: v => `have been ${v.ing}`,
+        hint: 'Recent activity that explains a visible present result (I)',
+        expl: v => `have been + V-ing: a recent activity that explains the current situation: have been ${v.ing}.` },
+      { s: 'She sounds tired — how long ___ she ___ ({sp})?',
+        ans: v => `has / been ${v.ing}`,
+        hint: 'Asking about the duration of an ongoing activity (she)',
+        expl: v => `has been + V-ing with "how long" to ask about duration: has been ${v.ing}.` },
+      { s: 'They ___ ({sp}) on that problem since Tuesday and still haven\'t solved it.',
+        ans: v => `have been ${v.ing}`,
+        hint: "'Since' marks when the activity started (they)",
+        expl: v => `have been + V-ing with "since" for an activity that started at a specific past time: have been ${v.ing}.` },
+      { s: 'The roads are wet. It ___ ({sp}) for hours.',
+        ans: v => `has been ${v.ing}`,
+        hint: 'A natural process causing a present condition (it)',
+        expl: v => `has been + V-ing explains why the present situation is as it is: has been ${v.ing}.` },
+      { s: 'He\'s out of breath because he ___ ({sp}) to catch the bus.',
+        ans: v => `has been ${v.ing}`,
+        hint: 'Physical evidence of a recent ongoing effort (he)',
+        expl: v => `has been + V-ing for a recent sustained activity with a physical present result: has been ${v.ing}.` },
+      { s: 'We ___ ({sp}) for a solution, but nothing has worked yet.',
+        ans: v => `have been ${v.ing}`,
+        hint: 'An ongoing effort with no clear result yet (we)',
+        expl: v => `have been + V-ing stresses an ongoing effort whose result is not yet achieved: have been ${v.ing}.` },
     ]},
+
   { id:'past', label:'Past Simple', structure:'Subject + V2  (regular → V+ed, irregular → V2)',
     templates:[
-      { s:'I ___ ({sp}) yesterday.',                ans:v=>v.past,      hint:'Completed action yesterday (I)',         expl:v=>`Past simple: ${v.base} → ${v.past} (${v.type}).` },
-      { s:'She ___ ({sp}) last night.',             ans:v=>v.past_norm, hint:'Something done last night (she)',        expl:v=>`Past simple: ${v.base} → ${v.past_norm}.` },
-      { s:'They ___ ({sp}) last week.',             ans:v=>v.past,      hint:'Completed action last week (they)',      expl:v=>`Past simple: ${v.base} → ${v.past}.` },
-      { s:'He ___ ({sp}) this morning.',            ans:v=>v.past_norm, hint:'Finished action this morning (he)',      expl:v=>`${v.type === 'regular' ? 'Regular verb: add -ed' : 'Irregular verb'}: ${v.base} → ${v.past_norm}.` },
-      { s:'We ___ ({sp}) when we were young.',      ans:v=>v.past,      hint:'Past habit no longer true (we)',         expl:v=>`Past simple for past habits: ${v.base} → ${v.past}.` },
+      { s: 'I ___ ({sp}) last night, but I don\'t remember all the details.',
+        ans: v => v.past,
+        hint: 'A completed action at a specific time in the past (I)',
+        expl: v => `Past simple for a completed action: ${v.base} → ${v.past} (${v.type}).` },
+      { s: 'She ___ ({sp}) before anyone else arrived.',
+        ans: v => v.past_norm,
+        hint: 'A sequence of past events (she was first)',
+        expl: v => `Past simple for a completed past action: ${v.base} → ${v.past_norm}.` },
+      { s: 'When I was a teenager, I ___ ({sp}) all the time.',
+        ans: v => v.past,
+        hint: 'A past habit that no longer exists',
+        expl: v => `Past simple for past habits or repeated actions that are no longer true: ${v.base} → ${v.past}.` },
+      { s: 'The company ___ ({sp}) a record profit last year.',
+        ans: v => v.past_norm,
+        hint: 'A completed business achievement (past year = specific time)',
+        expl: v => `"Last year" is a completed time period, so we use past simple: ${v.base} → ${v.past_norm}.` },
+      { s: 'Did you ___ ({sp}) after the meeting yesterday?',
+        ans: v => v.base,
+        hint: 'Question in the past (did + base form)',
+        expl: v => `In past simple questions, "did" carries the tense — the verb stays as base form: ${v.base}.` },
+      { s: 'Nobody ___ ({sp}) where the problem was coming from.',
+        ans: v => v.past_norm,
+        hint: 'A state or situation in the past (nobody = third person)',
+        expl: v => `Past simple for a past state or situation: ${v.base} → ${v.past_norm}.` },
+      { s: 'He ___ ({sp}) the whole project by himself and it was incredible.',
+        ans: v => v.past_norm,
+        hint: 'An impressive past achievement (he)',
+        expl: v => `Past simple for a completed action with a known past time: ${v.base} → ${v.past_norm}.` },
     ]},
+
   { id:'pac', label:'Past Continuous', structure:'Subject + was/were + V-ing',
     templates:[
-      { s:'I ___ ({sp}) when you called.',          ans:v=>`was ${v.ing}`,  hint:'Action in progress when interrupted (I)',  expl:v=>`was + V-ing: was ${v.ing}.` },
-      { s:'She ___ ({sp}) all afternoon.',          ans:v=>`was ${v.ing}`,  hint:'Ongoing background action (she)',          expl:v=>`was + V-ing: was ${v.ing}.` },
-      { s:'They ___ ({sp}) when I arrived.',        ans:v=>`were ${v.ing}`, hint:'Activity in progress on my arrival',       expl:v=>`were + V-ing: were ${v.ing}.` },
-      { s:'At 8 pm, he ___ ({sp}).',                ans:v=>`was ${v.ing}`,  hint:'Activity in progress at a past time',      expl:v=>`was + V-ing for a past moment in progress: was ${v.ing}.` },
-      { s:'We ___ ({sp}) while it rained.',         ans:v=>`were ${v.ing}`, hint:'Parallel ongoing past actions',             expl:v=>`were + V-ing: were ${v.ing}.` },
+      { s: 'I ___ ({sp}) when the power suddenly went out.',
+        ans: v => `was ${v.ing}`,
+        hint: 'An activity interrupted by a sudden past event (I)',
+        expl: v => `was + V-ing for a longer past action interrupted by a shorter event: was ${v.ing}.` },
+      { s: 'While she ___ ({sp}), someone knocked on the door.',
+        ans: v => `was ${v.ing}`,
+        hint: 'Background activity when something else happened (she)',
+        expl: v => `was + V-ing as the background action in a past narrative: was ${v.ing}.` },
+      { s: 'The children ___ ({sp}) all afternoon while it rained outside.',
+        ans: v => `were ${v.ing}`,
+        hint: 'Two parallel past activities happening at the same time (they)',
+        expl: v => `were + V-ing for a past activity happening at the same time as another: were ${v.ing}.` },
+      { s: 'Sorry I missed your call — I ___ ({sp}) in the other room.',
+        ans: v => `was ${v.ing}`,
+        hint: 'An activity that explains why something else was missed (I)',
+        expl: v => `was + V-ing explains what was in progress at a specific past moment: was ${v.ing}.` },
+      { s: 'When the boss walked in, everyone ___ ({sp}) at their desks.',
+        ans: v => `was ${v.ing}`,
+        hint: 'An activity already in progress when someone arrived',
+        expl: v => `was + V-ing for an ongoing action at the moment another event occurred: was ${v.ing}.` },
+      { s: 'I remember it was snowing and she ___ ({sp}) — it looked beautiful.',
+        ans: v => `was ${v.ing}`,
+        hint: 'Setting a past scene with background atmosphere (she)',
+        expl: v => `Past continuous sets the scene in a narrative: was ${v.ing}.` },
     ]},
+
   { id:'pap', label:'Past Perfect', structure:'Subject + had + V3 (past participle)',
     templates:[
-      { s:'I ___ ({sp}) before she arrived.',       ans:v=>`had ${v.participle}`, hint:'Action completed before another past event', expl:v=>`Past perfect: had + past participle → had ${v.participle}.` },
-      { s:'She ___ ({sp}) by the time we got there.',ans:v=>`had ${v.participle}`,hint:'Completed before a past reference point',  expl:v=>`had + past participle: had ${v.participle}.` },
-      { s:'They ___ ({sp}) before the meeting.',    ans:v=>`had ${v.participle}`, hint:'Done before the meeting started',          expl:v=>`had + past participle: had ${v.participle}.` },
-      { s:'He ___ already ___ ({sp}).',             ans:v=>`had / ${v.participle}`,hint:"'Already' = done before a past moment",  expl:v=>`had already + past participle: had already ${v.participle}.` },
-      { s:'When I checked, they ___ ({sp}).',       ans:v=>`had ${v.participle}`, hint:'Past action before my checking',          expl:v=>`had + past participle: had ${v.participle}.` },
+      { s: 'When I got to the party, most of the guests ___ already ___ ({sp}).',
+        ans: v => `had / ${v.participle}`,
+        hint: "Action completed before I arrived — 'already' is a clue",
+        expl: v => `had + past participle: the earlier of two past events: had already ${v.participle}.` },
+      { s: 'She wasn\'t hungry at dinner because she ___ ({sp}) just an hour before.',
+        ans: v => `had ${v.participle}`,
+        hint: 'A past action that explains a past state (she)',
+        expl: v => `had + past participle: a past action that explains why the later past situation was as it was: had ${v.participle}.` },
+      { s: 'He realised he ___ ({sp}) his wallet the moment he got to the counter.',
+        ans: v => `had ${v.participle}`,
+        hint: 'Something discovered was done (or not done) before that moment',
+        expl: v => `had + past participle for an action prior to the moment of realisation: had ${v.participle}.` },
+      { s: 'By the time the ambulance arrived, the neighbours ___ ({sp}) the situation.',
+        ans: v => `had ${v.participle}`,
+        hint: "Completed before another past event ('by the time' = clue)",
+        expl: v => `"By the time" signals past perfect: had + past participle: had ${v.participle}.` },
+      { s: 'I was nervous at the interview because I ___ never ___ ({sp}) anything like that.',
+        ans: v => `had / ${v.participle}`,
+        hint: 'Zero experience up to that past moment',
+        expl: v => `had never + past participle: no experience before a specific past moment: had never ${v.participle}.` },
+      { s: 'The team was exhausted — they ___ ({sp}) for sixteen hours straight.',
+        ans: v => `had ${v.participle}`,
+        hint: 'A completed effort that explains a past state (the team)',
+        expl: v => `had + past participle shows what was completed before a past point in time: had ${v.participle}.` },
     ]},
+
   { id:'papc', label:'Past Perfect Continuous', structure:'Subject + had been + V-ing',
     templates:[
-      { s:'I ___ ({sp}) for hours when she called.',ans:v=>`had been ${v.ing}`, hint:'Long activity before a past interruption', expl:v=>`had been + V-ing shows duration before a past event: had been ${v.ing}.` },
-      { s:'She was tired because she ___ ({sp}).',  ans:v=>`had been ${v.ing}`, hint:'Activity that caused past tiredness',      expl:v=>`had been + V-ing explains a past result: had been ${v.ing}.` },
-      { s:'They ___ ({sp}) for months before finishing.',ans:v=>`had been ${v.ing}`,hint:'Long effort before past completion', expl:v=>`had been + V-ing: had been ${v.ing}.` },
-      { s:'He ___ ({sp}) all day before the storm.', ans:v=>`had been ${v.ing}`,hint:'Sustained past activity before an event', expl:v=>`had been + V-ing: had been ${v.ing}.` },
-      { s:'We ___ ({sp}) for weeks before we stopped.',ans:v=>`had been ${v.ing}`,hint:'Ongoing activity that eventually ended', expl:v=>`had been + V-ing for duration before a past stopping point: had been ${v.ing}.` },
+      { s: 'Her eyes were red because she ___ ({sp}) for a long time.',
+        ans: v => `had been ${v.ing}`,
+        hint: 'A sustained activity explains a visible past condition (she)',
+        expl: v => `had been + V-ing: a sustained past activity explains a past visible result: had been ${v.ing}.` },
+      { s: 'I was absolutely exhausted — I ___ ({sp}) since six in the morning.',
+        ans: v => `had been ${v.ing}`,
+        hint: "'Since' marks the start of a long past effort (I)",
+        expl: v => `had been + V-ing with "since" for duration of activity before a past moment: had been ${v.ing}.` },
+      { s: 'By the time they finally solved it, they ___ ({sp}) on that bug for three days.',
+        ans: v => `had been ${v.ing}`,
+        hint: 'Long effort before a past achievement (they)',
+        expl: v => `had been + V-ing emphasises the duration of effort before a past result: had been ${v.ing}.` },
+      { s: 'He smelled of smoke when he came in — he ___ ({sp}) outside.',
+        ans: v => `had been ${v.ing}`,
+        hint: 'Physical evidence of a sustained past activity (he)',
+        expl: v => `had been + V-ing for a recent ongoing past activity with a physical clue: had been ${v.ing}.` },
+      { s: 'The kids were filthy — they ___ ({sp}) in the garden all afternoon.',
+        ans: v => `had been ${v.ing}`,
+        hint: 'Cause of their dirty state — a sustained past activity (they)',
+        expl: v => `had been + V-ing explains the cause of a past observable condition: had been ${v.ing}.` },
+      { s: 'She finally handed in the report she ___ ({sp}) all week.',
+        ans: v => `had been ${v.ing}`,
+        hint: 'Ongoing preparation before a past completion (she)',
+        expl: v => `had been + V-ing for continuous effort leading up to a past event: had been ${v.ing}.` },
     ]},
+
   { id:'fw', label:'Future Simple (will)', structure:'Subject + will + V1 (base)',
     templates:[
-      { s:'I ___ ({sp}) tomorrow.',                 ans:v=>`will ${v.base}`, hint:'Spontaneous decision or promise (I)',     expl:v=>`will + base form: will ${v.base}.` },
-      { s:'She ___ ({sp}) next week.',              ans:v=>`will ${v.base}`, hint:'Prediction about the future (she)',       expl:v=>`will + base form: will ${v.base}.` },
-      { s:'They ___ ({sp}) later today.',           ans:v=>`will ${v.base}`, hint:'Future action (they)',                    expl:v=>`will + base form: will ${v.base}.` },
-      { s:'I think he ___ ({sp}).',                 ans:v=>`will ${v.base}`, hint:'Opinion-based prediction',               expl:v=>`will + base form for predictions: will ${v.base}.` },
-      { s:'I promise I ___ ({sp}).',                ans:v=>`will ${v.base}`, hint:'A promise about the future',             expl:v=>`will + base form for promises: will ${v.base}.` },
+      { s: 'Don\'t worry — I ___ ({sp}) as soon as I get home.',
+        ans: v => `will ${v.base}`,
+        hint: 'A spontaneous promise made right now (I)',
+        expl: v => `will + base form for a spontaneous decision or promise: will ${v.base}.` },
+      { s: 'I\'m sure the presentation ___ ({sp}) the board — it\'s excellent.',
+        ans: v => `will ${v.base}`,
+        hint: 'A confident prediction about the future',
+        expl: v => `will + base form for confident future predictions: will ${v.base}.` },
+      { s: 'If you keep practising, you ___ ({sp}) great results.',
+        ans: v => `will ${v.base}`,
+        hint: 'A conditional prediction (first conditional)',
+        expl: v => `First conditional result clause: will + base form: will ${v.base}.` },
+      { s: 'I\'ll get the door — you ___ ({sp}) what you\'re doing.',
+        ans: v => `will ${v.base}`,
+        hint: 'An offer so someone else can continue (you)',
+        expl: v => `will + base form for offers and volunteering: will ${v.base}.` },
+      { s: 'Scientists predict that global temperatures ___ ({sp}) significantly this century.',
+        ans: v => `will ${v.base}`,
+        hint: 'An expert prediction based on evidence',
+        expl: v => `will + base form for predictions supported by evidence or opinion: will ${v.base}.` },
+      { s: 'Let me know if you need help — I ___ ({sp}) right away.',
+        ans: v => `will ${v.base}`,
+        hint: 'A readiness to act the moment something happens (I)',
+        expl: v => `will + base form for readiness or willingness to act: will ${v.base}.` },
     ]},
+
   { id:'fg', label:'Going to (future)', structure:'Subject + am/is/are + going to + V1',
     templates:[
-      { s:'I ___ ({sp}) this weekend.',             ans:v=>`am going to ${v.base}`, hint:'Personal plan already decided (I)',     expl:v=>`am going to + base form: am going to ${v.base}.` },
-      { s:'She ___ ({sp}) next month.',             ans:v=>`is going to ${v.base}`, hint:'Pre-arranged plan (she)',               expl:v=>`is going to + base form: is going to ${v.base}.` },
-      { s:'They ___ ({sp}) after class.',           ans:v=>`are going to ${v.base}`,hint:'Group plan already made (they)',        expl:v=>`are going to + base form: are going to ${v.base}.` },
-      { s:'Look at those clouds — it ___ rain.',    ans:v=>`is going to`,           hint:'Evidence of an imminent event',         expl:`is going to (+ verb) = prediction based on present evidence.` },
-      { s:'He ___ ({sp}) tomorrow — he told me.',  ans:v=>`is going to ${v.base}`, hint:'Plan already decided (he)',             expl:v=>`is going to + base form: is going to ${v.base}.` },
+      { s: 'Watch out! That shelf is loose — it ___ fall!',
+        ans: v => `is going to`,
+        hint: 'Present evidence makes this event seem inevitable',
+        expl: `is going to + verb: used when visible present evidence makes a future event highly likely.` },
+      { s: 'I\'ve already bought my tickets — I ___ ({sp}) next month.',
+        ans: v => `am going to ${v.base}`,
+        hint: 'A pre-arranged personal plan (I)',
+        expl: v => `am going to + base form for a plan that has already been decided: am going to ${v.base}.` },
+      { s: 'We\'ve decided: we ___ ({sp}) our office to the city centre.',
+        ans: v => `are going to ${v.base}`,
+        hint: 'A decision already made by a group (we)',
+        expl: v => `are going to + base form for an already-decided plan: are going to ${v.base}.` },
+      { s: 'She\'s been training for months — she ___ ({sp}) at the marathon.',
+        ans: v => `is going to ${v.base}`,
+        hint: 'A planned action backed by preparation (she)',
+        expl: v => `is going to + base form for a planned and prepared-for future event: is going to ${v.base}.` },
+      { s: 'I can tell by his face that he ___ ({sp}) as soon as she walks in.',
+        ans: v => `is going to ${v.base}`,
+        hint: 'A prediction based on reading someone\'s expression (he)',
+        expl: v => `is going to + base form for predictions based on present evidence: is going to ${v.base}.` },
+      { s: 'They ___ ({sp}) the whole building — it\'s already on the schedule.',
+        ans: v => `are going to ${v.base}`,
+        hint: 'A confirmed upcoming plan (they)',
+        expl: v => `are going to + base form for a confirmed and scheduled future plan: are going to ${v.base}.` },
     ]},
+
   { id:'fc', label:'Future Continuous', structure:'Subject + will be + V-ing',
     templates:[
-      { s:'This time tomorrow, I ___ ({sp}).',      ans:v=>`will be ${v.ing}`, hint:'Activity in progress at a future moment', expl:v=>`will be + V-ing: will be ${v.ing}.` },
-      { s:'At 8 pm, she ___ ({sp}).',               ans:v=>`will be ${v.ing}`, hint:'Expected activity at a specific future time', expl:v=>`will be + V-ing: will be ${v.ing}.` },
-      { s:'This time next week, they ___ ({sp}).',  ans:v=>`will be ${v.ing}`, hint:'Ongoing activity at a future point',      expl:v=>`will be + V-ing: will be ${v.ing}.` },
-      { s:'Don\'t call — he ___ ({sp}) then.',      ans:v=>`will be ${v.ing}`, hint:'Activity likely in progress then (he)',   expl:v=>`will be + V-ing for an expected future activity: will be ${v.ing}.` },
-      { s:'We ___ ({sp}) when you arrive.',         ans:v=>`will be ${v.ing}`, hint:'Action in progress when you get there',  expl:v=>`will be + V-ing: will be ${v.ing}.` },
+      { s: 'This time tomorrow I ___ ({sp}) on a plane to Tokyo — how exciting!',
+        ans: v => `will be ${v.ing}`,
+        hint: 'An action in progress at a specific future moment (I)',
+        expl: v => `will be + V-ing for an action that will be in progress at a future time: will be ${v.ing}.` },
+      { s: 'Don\'t call between 2 and 3 — she ___ ({sp}) in an important meeting.',
+        ans: v => `will be ${v.ing}`,
+        hint: 'A predictable ongoing activity at a known future time (she)',
+        expl: v => `will be + V-ing for an activity expected to be in progress at a future moment: will be ${v.ing}.` },
+      { s: 'By the time the guests arrive, we ___ ({sp}) the final preparations.',
+        ans: v => `will be ${v.ing}`,
+        hint: 'Activity in progress when a future event occurs (we)',
+        expl: v => `will be + V-ing for an activity that will still be happening when another future event takes place: will be ${v.ing}.` },
+      { s: 'Next year, the company ___ ({sp}) its 50th anniversary.',
+        ans: v => `will be ${v.ing}`,
+        hint: 'A planned or scheduled ongoing future event',
+        expl: v => `will be + V-ing for a planned activity happening around a future time: will be ${v.ing}.` },
+      { s: 'I imagine in ten years, most people ___ ({sp}) differently because of AI.',
+        ans: v => `will be ${v.ing}`,
+        hint: 'A prediction about an ongoing future situation',
+        expl: v => `will be + V-ing for imagined ongoing situations in the future: will be ${v.ing}.` },
+      { s: 'He won\'t be free — he ___ ({sp}) his new project all week.',
+        ans: v => `will be ${v.ing}`,
+        hint: 'An ongoing activity throughout a future period (he)',
+        expl: v => `will be + V-ing for a continuous activity during a future period: will be ${v.ing}.` },
     ]},
+
   { id:'fp', label:'Future Perfect', structure:'Subject + will have + V3 (past participle)',
     templates:[
-      { s:'By Friday, I ___ ({sp}).',               ans:v=>`will have ${v.participle}`, hint:'Completed before a future deadline (I)', expl:v=>`will have + past participle: will have ${v.participle}.` },
-      { s:'By next month, she ___ ({sp}).',         ans:v=>`will have ${v.participle}`, hint:'Done before a future point (she)',        expl:v=>`will have + past participle: will have ${v.participle}.` },
-      { s:'By the time you arrive, they ___ ({sp}).',ans:v=>`will have ${v.participle}`,hint:'Completed before a future event',         expl:v=>`will have + past participle: will have ${v.participle}.` },
-      { s:'He ___ ({sp}) by the end of the day.',   ans:v=>`will have ${v.participle}`, hint:'Completion before end of day (he)',       expl:v=>`will have + past participle: will have ${v.participle}.` },
-      { s:'I promise: by June, I ___ ({sp}).',      ans:v=>`will have ${v.participle}`, hint:'Commitment to complete before a future time', expl:v=>`will have + past participle: will have ${v.participle}.` },
+      { s: 'By the time you read this, I ___ ({sp}) everything and left.',
+        ans: v => `will have ${v.participle}`,
+        hint: 'Completed before a future moment when someone reads this (I)',
+        expl: v => `will have + past participle: action completed before a future reference point: will have ${v.participle}.` },
+      { s: 'She ___ ({sp}) all the reports by Friday — she\'s nearly done.',
+        ans: v => `will have ${v.participle}`,
+        hint: "Completed before a future deadline (she) — 'by Friday' is the clue",
+        expl: v => `will have + past participle with "by [time]" for completion before a deadline: will have ${v.participle}.` },
+      { s: 'By 2030, researchers predict they ___ ({sp}) a major breakthrough.',
+        ans: v => `will have ${v.participle}`,
+        hint: 'Achievement before a future year (they)',
+        expl: v => `will have + past participle for predicted achievement before a future point: will have ${v.participle}.` },
+      { s: 'Call me after 6 — I ___ ({sp}) by then and will be free to talk.',
+        ans: v => `will have ${v.participle}`,
+        hint: "Finished before a future time — 'by then' is the clue (I)",
+        expl: v => `will have + past participle with "by then" for completion before a future moment: will have ${v.participle}.` },
+      { s: 'When she retires, she ___ ({sp}) in that company for over 30 years.',
+        ans: v => `will have ${v.participle}`,
+        hint: 'A total duration completed at a future point (she)',
+        expl: v => `will have + past participle to express a completed duration by a future moment: will have ${v.participle}.` },
+      { s: 'Don\'t worry about the cake — by the time guests arrive, it ___ ({sp}) completely.',
+        ans: v => `will have ${v.participle}`,
+        hint: 'A natural process completed before guests arrive (it)',
+        expl: v => `will have + past participle: process completed before a future event: will have ${v.participle}.` },
     ]},
 ];
 
@@ -234,28 +596,27 @@ function nextQ(){
 
 function renderQ(v, tmpl){
   const area=document.getElementById('qa');
-  // Compute answer - handle special case for "it is going to rain" template
-  let ans;
-  try { ans = (typeof tmpl.ans==='function') ? tmpl.ans(v) : tmpl.ans; }
-  catch(e){ ans = '—'; }
-  // Compute explanation
-  let expl;
-  try { expl = (typeof tmpl.expl==='function') ? tmpl.expl(v) : tmpl.expl; }
-  catch(e){ expl = ''; }
+  let ans, expl;
+  try { ans = typeof tmpl.ans==='function' ? tmpl.ans(v) : tmpl.ans; }
+  catch(e){ ans='—'; }
+  try { expl = typeof tmpl.expl==='function' ? tmpl.expl(v) : tmpl.expl; }
+  catch(e){ expl=''; }
 
-  // Build sentence: replace ___ with blank, {sp} with Spanish
-  let sent = tmpl.s.replace('{sp}', v.spanish);
-  // Handle split blanks like "have / participle"
+  // Replace {sp} with Spanish translation
+  let raw = tmpl.s.replace('{sp}', v.spanish);
+
+  // Build visual sentence with blank(s)
+  let sent;
   if(ans.includes(' / ')){
-    const parts = sent.split('___');
-    sent = parts[0]+'<span class="blank">____</span>'+parts[1].replace('___','<span class="blank">____</span>')+(parts[2]||'');
+    const parts = raw.split('___');
+    sent = parts[0]+'<span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>'
+         +(parts[1]||'').replace('___','<span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>')
+         +(parts[2]||'');
   } else {
-    sent = sent.replace('___','<span class="blank">________</span>');
+    sent = raw.replace('___','<span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>');
   }
 
-  // Progress
-  const prog=Math.min(100,Math.round(qCount/VERBS.length*100));
-  document.getElementById('prog').style.width=prog+'%';
+  document.getElementById('prog').style.width=Math.min(100,Math.round(qCount/VERBS.length*100))+'%';
 
   area.innerHTML=`
     <div class="card">
@@ -273,6 +634,7 @@ function renderQ(v, tmpl){
       <div id="fb"></div>
     </div>
     <button class="nxtbtn" id="nbtn" onclick="nextQ()">Next question →</button>`;
+
   area._v=v; area._tmpl=tmpl; area._ans=ans; area._expl=expl;
   const inp=document.getElementById('ans');
   inp.focus();
@@ -284,13 +646,12 @@ function norm(s){ return s.trim().toLowerCase().replace(/\s+/g,' '); }
 function doCheck(){
   if(answered) return;
   const area=document.getElementById('qa');
-  const ans=area._ans; const expl=area._expl;
+  const ans=area._ans, expl=area._expl;
   const inp=document.getElementById('ans');
   const val=inp.value.trim(); if(!val){ inp.focus(); return; }
   answered=true; inp.disabled=true; document.getElementById('cbtn').disabled=true;
 
   const u=norm(val), c=norm(ans);
-  // Also accept answers without slash for split answers
   const cAlt=c.replace(' / ',' ');
   const ok = u===c || u===cAlt
     || u.replace(/'/g,'')===c.replace(/'/g,'')
@@ -300,12 +661,10 @@ function doCheck(){
   total++; if(ok) correct++; else wrong++;
   updateScore();
 
-  const fb=document.getElementById('fb');
-  if(ok){
-    fb.innerHTML=`<div class="fb ok">✓ Correct! Well done.<div class="expl">${expl}</div></div>`;
-  } else {
-    fb.innerHTML=`<div class="fb no">✗ Not quite. Correct: <span class="cans">${ans}</span><div class="expl">${expl}</div></div>`;
-  }
+  document.getElementById('fb').innerHTML = ok
+    ? `<div class="fb ok">✓ Correct! Well done.<div class="expl">${expl}</div></div>`
+    : `<div class="fb no">✗ Not quite. Correct answer: <span class="cans">${ans}</span><div class="expl">${expl}</div></div>`;
+
   document.getElementById('nbtn').style.display='block';
 }
 
