@@ -1226,7 +1226,7 @@ function filterDrink() {
 
 // Text-to-speech using Web Speech API
 let currentUtterance = null;
-function speakWord2(text, lang, idx, type) {
+function speakWord(text, lang, idx, type) {
   if (!window.speechSynthesis) {
     alert('Your browser does not support text-to-speech.');
     return;
@@ -1253,7 +1253,7 @@ function speakWord2(text, lang, idx, type) {
   window.speechSynthesis.speak(utter);
 }
 
-function speakWord(text, lang, idx, type) {
+function speakWord2(text, lang, idx, type) {
   const btnId = type === 'en' ? `spk-en-${idx}` : `spk-es-${idx}`;
   document.querySelectorAll('.speak-btn, .speak-es-btn').forEach(b => b.classList.remove('playing'));
   const btn = document.getElementById(btnId);
