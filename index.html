@@ -1830,23 +1830,26 @@ function speakTense4(text, vi, ti) {
 
   function speakTense(text, vi, ti) {
     if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel(); // Detener audios previos inmediatamente
-
-    // Lógica visual
+    window.speechSynthesis.cancel();
+  
+    // Lógica visual para los botones
     document.querySelectorAll('.tense-audio').forEach(b => b.classList.remove('playing'));
     const rows = document.querySelectorAll('#vtenses-' + vi + ' .tense-audio');
     if (rows[ti]) rows[ti].classList.add('playing');
   
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = 'en-US';
-    utter.rate = 0.9; // Velocidad un poco más natural
+    utter.rate = 0.85;
   
-    // Seleccionar la mejor voz disponible (Google US English suele ser la más fluida)
-    const bestVoice = voices.find(v => v.name.includes('Google') && v.lang.startsWith('en')) || 
-                      voices.find(v => v.lang === 'en-US') || 
-                      voices.find(v => v.lang.startsWith('en'));
+    // OBTENER VOCES AQUÍ MISMO (Solución al error de referencia)
+    const availableVoices = window.speechSynthesis.getVoices();
     
-    if (bestVoice) utter.voice = bestVoice;
+    // Buscar la mejor voz en el momento
+    const match = availableVoices.find(v => v.lang === 'en-US' && v.name.includes('Google')) || 
+                  availableVoices.find(v => v.lang === 'en-US') || 
+                  availableVoices.find(v => v.lang.startsWith('en'));
+    
+    if (match) utter.voice = match;
   
     utter.onend = () => { if (rows[ti]) rows[ti].classList.remove('playing'); };
     utter.onerror = () => { if (rows[ti]) rows[ti].classList.remove('playing'); };
