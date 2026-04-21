@@ -1844,7 +1844,7 @@ function speakTense2(text) {
   }
 
   // 2. Usamos la URL de Google Translate TTS (es rápida y fluida)
-  const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=en&client=tw-ob`;
+  const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=text}&tl=en&client=tw-ob`;
   
   window.currentAudio = new Audio(url);
   
