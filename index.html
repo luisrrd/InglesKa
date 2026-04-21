@@ -1799,7 +1799,7 @@ function speakTense3(text, vi, ti) {
   window.speechSynthesis.speak(utter);
 }
 
-function speakTense(text, vi, ti) {
+function speakTense4(text, vi, ti) {
   // 1. Manejo visual: quitamos 'playing' de otros y ponemos al actual
   document.querySelectorAll('.tense-audio').forEach(b => b.classList.remove('playing'));
   const rows = document.querySelectorAll('#vtenses-' + vi + ' .tense-audio');
@@ -1826,6 +1826,32 @@ function speakTense(text, vi, ti) {
     // Opcional: Si falla la conexión, puedes llamar a una versión simple de tu función anterior
     if (rows[ti]) rows[ti].classList.remove('playing');
   });
+}
+
+  function speakTense(text, vi, ti) {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel(); // Detener audios previos inmediatamente
+
+    // Lógica visual
+    document.querySelectorAll('.tense-audio').forEach(b => b.classList.remove('playing'));
+    const rows = document.querySelectorAll('#vtenses-' + vi + ' .tense-audio');
+    if (rows[ti]) rows[ti].classList.add('playing');
+  
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'en-US';
+    utter.rate = 0.9; // Velocidad un poco más natural
+  
+    // Seleccionar la mejor voz disponible (Google US English suele ser la más fluida)
+    const bestVoice = voices.find(v => v.name.includes('Google') && v.lang.startsWith('en')) || 
+                      voices.find(v => v.lang === 'en-US') || 
+                      voices.find(v => v.lang.startsWith('en'));
+    
+    if (bestVoice) utter.voice = bestVoice;
+  
+    utter.onend = () => { if (rows[ti]) rows[ti].classList.remove('playing'); };
+    utter.onerror = () => { if (rows[ti]) rows[ti].classList.remove('playing'); };
+  
+    window.speechSynthesis.speak(utter);
 }
 
 function filterIrrVerbs() {
