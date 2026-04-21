@@ -236,6 +236,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   .tense-name{min-width:120px;font-size:10px;}
   .tense-form{font-size:14px;}
 }
+
+/* ── VOICE PICKER ── */
+.voice-picker-wrap{display:flex;align-items:center;gap:8px;}
+.voice-label{font-size:12px;color:var(--t3);white-space:nowrap;}
+.voice-select{
+  padding:4px 8px;border:1px solid var(--bo2);border-radius:var(--rs);
+  font-size:12px;font-family:'DM Sans',sans-serif;color:var(--t2);
+  background:var(--surface);cursor:pointer;max-width:160px;
+}
+.voice-select:focus{outline:none;border-color:var(--blum);}
+@media(max-width:600px){.voice-label{display:none;}.voice-select{max-width:110px;font-size:11px;}}
 </style>
 </head>
 <body>
@@ -338,6 +349,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <span class="label">Irregular Verbs</span>
     <span class="badge-pill">90</span>
   </button>
+  <button class="nav-item" id="nav-regverbs" onclick="showPanel('regverbs')">
+    <span class="ico">📝</span>
+    <span class="label">Regular Verbs</span>
+    <span class="badge-pill">61</span>
+  </button>
 
   <div class="sidebar-footer">English Learning Hub</div>
 </div>
@@ -348,7 +364,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <!-- TOP BAR -->
   <div class="topbar">
     <div class="topbar-title" id="topbar-title">Tenses Quiz</div>
-    <div class="topbar-pills" id="score-pills" style="display:none">
+    <div class="voice-picker-wrap">
+    <span class="voice-label">🔊 Voice:</span>
+    <select class="voice-select" id="voice-en-select" title="English voice"></select>
+  </div>
+  <div class="topbar-pills" id="score-pills" style="display:none">
       <div class="pill c" id="sc">✓ 0</div>
       <div class="pill w" id="sw">✗ 0</div>
       <div class="pill p" id="sp2">— %</div>
@@ -574,6 +594,23 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     </div>
   </div>
 
+
+  <!-- ── REGULAR VERBS PANEL ── -->
+  <div class="panel" id="panel-regverbs">
+    <div class="irrverbs-wrap">
+      <div class="vocab-header">
+        <h2>Regular Verbs</h2>
+        <p>Click any verb to expand all 12 tenses. Use the 🔊 buttons to hear each form.</p>
+      </div>
+      <div class="vocab-search">
+        <span class="search-ico">🔍</span>
+        <input type="text" id="regverbs-search" placeholder="Search in English or Spanish…" oninput="filterRegVerbs()" autocomplete="off"/>
+      </div>
+      <div class="vocab-count" id="regverbs-count">61 verbs</div>
+      <div id="regverbs-list"></div>
+    </div>
+  </div>
+
 </div><!-- end .content -->
 
 <script>
@@ -585,7 +622,7 @@ function showPanel(id) {
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   document.getElementById('panel-'+id).classList.add('active');
   document.getElementById('nav-'+id).classList.add('active');
-  const titles = { quiz:'Tenses Quiz', adj:'Adjectives', ani:"Animals", prof:"Professions", sports:"Sports", body:"Body Parts", school:"School", tech:"Technology", food:"Food", fruit:"Fruits", vegetables:"Vegetables", fast:"Fast Food", drink:"Beverages", irrverbs:"Irregular Verbs" };
+  const titles = { quiz:'Tenses Quiz', adj:'Adjectives', ani:"Animals", prof:"Professions", sports:"Sports", body:"Body Parts", school:"School", tech:"Technology", food:"Food", fruit:"Fruits", vegetables:"Vegetables", fast:"Fast Food", drink:"Beverages", irrverbs:"Irregular Verbs", regverbs:"Regular Verbs" };
   document.getElementById('topbar-title').textContent = titles[id] || '';
   document.getElementById('score-pills').style.display = (id === 'quiz') ? 'flex' : 'none';
   if(window.innerWidth <= 700) closeSidebar();
@@ -1226,32 +1263,88 @@ function filterDrink() {
 
 // Text-to-speech using Web Speech API
 let currentUtterance = null;
-function speakWord(text, lang, idx, type) {
-  if (!window.speechSynthesis) {
-    alert('Your browser does not support text-to-speech.');
-    return;
+// ── UNIFIED VOICE ENGINE ──────────────────────────────────────
+let selectedEnVoice = null;
+let selectedEsVoice = null;
+
+function populateVoiceList() {
+  const voices = window.speechSynthesis.getVoices();
+  const sel = document.getElementById('voice-en-select');
+  if (!sel || voices.length === 0) return;
+
+  // Filter English voices, prefer non-local (cloud/neural) when available
+  const enVoices = voices.filter(v => v.lang.startsWith('en'));
+  if (enVoices.length === 0) return;
+
+  // Priority: Google voices > named female (Samantha, Karen, Moira, Fiona, Victoria, Serena) > any en-US > any en
+  const priority = ['Google UK English Female','Google US English','Samantha','Karen','Moira','Fiona','Victoria','Serena','Zira','Hazel'];
+  const sorted = [...enVoices].sort((a, b) => {
+    const ai = priority.findIndex(p => a.name.includes(p));
+    const bi = priority.findIndex(p => b.name.includes(p));
+    if (ai === -1 && bi === -1) {
+      // prefer en-US then en-GB
+      if (a.lang === 'en-US' && b.lang !== 'en-US') return -1;
+      if (b.lang === 'en-US' && a.lang !== 'en-US') return 1;
+      return 0;
+    }
+    if (ai === -1) return 1;
+    if (bi === -1) return -1;
+    return ai - bi;
+  });
+
+  // Save current selection
+  const currentName = sel.value;
+  sel.innerHTML = '';
+  sorted.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v.name;
+    opt.textContent = v.name.replace('Google ','').replace(' (Enhanced)','') + (v.lang ? ' ['+v.lang+']' : '');
+    sel.appendChild(opt);
+  });
+
+  // Restore or pick best
+  if (currentName && sorted.find(v => v.name === currentName)) {
+    sel.value = currentName;
+  } else {
+    sel.selectedIndex = 0;
   }
+  selectedEnVoice = sorted.find(v => v.name === sel.value) || sorted[0];
+  sel.addEventListener('change', () => {
+    selectedEnVoice = window.speechSynthesis.getVoices().find(v => v.name === sel.value);
+  });
+}
+
+function getEsVoice() {
+  const voices = window.speechSynthesis.getVoices();
+  return voices.find(v => v.lang === 'es-ES') ||
+         voices.find(v => v.lang === 'es-MX') ||
+         voices.find(v => v.lang.startsWith('es')) || null;
+}
+
+function speakText(text, lang, onEnd) {
+  if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text.replace(/\//g, ' ').replace(/ \/ /g, ' '));
+  utter.lang = lang || 'en-US';
+  utter.rate = 0.82;
+  utter.pitch = 1;
+  if (lang && lang.startsWith('es')) {
+    const esV = getEsVoice();
+    if (esV) utter.voice = esV;
+  } else {
+    if (!selectedEnVoice) populateVoiceList();
+    if (selectedEnVoice) utter.voice = selectedEnVoice;
+  }
+  if (onEnd) { utter.onend = onEnd; utter.onerror = onEnd; }
+  window.speechSynthesis.speak(utter);
+}
+
+function speakWord(text, lang, idx, type) {
   const btnId = type === 'en' ? `spk-en-${idx}` : `spk-es-${idx}`;
   document.querySelectorAll('.speak-btn, .speak-es-btn').forEach(b => b.classList.remove('playing'));
   const btn = document.getElementById(btnId);
   if (btn) btn.classList.add('playing');
-
-  const cleanText = text.replace(/\//g, ' ')
-  const utter = new SpeechSynthesisUtterance(cleanText);
-  utter.lang = lang;
-  utter.rate = 0.85;
-  utter.pitch = 1;
-
-  // Try to pick a natural voice
-  const voices = window.speechSynthesis.getVoices();
-  const preferred = voices.find(v => v.lang.startsWith(lang.split('-')[0]) && !v.name.includes('Google') === false);
-  const match = voices.find(v => v.lang === lang) || voices.find(v => v.lang.startsWith(lang.split('-')[0]));
-  if (match) utter.voice = match;
-
-  utter.onend = () => { if(btn) btn.classList.remove('playing'); };
-  utter.onerror = () => { if(btn) btn.classList.remove('playing'); };
-  window.speechSynthesis.speak(utter);
+  speakText(text, lang, () => { if (btn) btn.classList.remove('playing'); });
 }
 
 function speakWord2(text, lang, idx, type) {
@@ -1292,7 +1385,9 @@ function speakWord2(text, lang, idx, type) {
 }
 
 // Load voices when available
-window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+window.speechSynthesis.onvoiceschanged = () => { populateVoiceList(); };
+// Try immediately in case voices are already loaded
+setTimeout(populateVoiceList, 200);
 
 // Build vocab on load
 buildVocabGrid(ADJECTIVES);
@@ -1783,81 +1878,12 @@ function toggleVerb(i) {
 }
 
 function speakTense(text, vi, ti) {
-  if (!window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
-  document.querySelectorAll('.tense-audio').forEach(b => b.classList.remove('playing'));
-  const btnId = 'tenseaudio-' + vi + '-' + ti;
-  // find the button by proximity
-  const rows = document.querySelectorAll('#vtenses-' + vi + ' .tense-audio');
-  if (rows[ti]) rows[ti].classList.add('playing');
-  const cleanText = text.replace(/\//g, ' ')
-  const utter = new SpeechSynthesisUtterance(cleanText);
-  utter.lang = 'en-US';
-  utter.rate = 0.85;
-  const voices = window.speechSynthesis.getVoices();
-  const match = voices.find(v => v.lang === 'en-US') || voices.find(v => v.lang.startsWith('en'));
-  if (match) utter.voice = match;
-  utter.onend = () => { if (rows[ti]) rows[ti].classList.remove('playing'); };
-  window.speechSynthesis.speak(utter);
-}
-
-function speakTense4(text, vi, ti) {
-  // 1. Manejo visual: quitamos 'playing' de otros y ponemos al actual
   document.querySelectorAll('.tense-audio').forEach(b => b.classList.remove('playing'));
   const rows = document.querySelectorAll('#vtenses-' + vi + ' .tense-audio');
   if (rows[ti]) rows[ti].classList.add('playing');
-
-  // 2. Detener cualquier audio que esté sonando antes de empezar el nuevo
-  if (window.currentAudio) {
-    window.currentAudio.pause();
-    window.currentAudio.currentTime = 0;
-  }
-
-  // 3. Configurar el nuevo audio usando la API de Google (más fluida)
-  const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=en&client=tw-ob`;
-  window.currentAudio = new Audio(url);
-
-  // 4. Quitar el efecto visual cuando termine el audio
-  window.currentAudio.onended = () => {
-    if (rows[ti]) rows[ti].classList.remove('playing');
-  };
-
-  // 5. Reproducir
-  window.currentAudio.play().catch(e => {
-    console.error("Error con el audio fluido, usando respaldo:", e);
-    // Opcional: Si falla la conexión, puedes llamar a una versión simple de tu función anterior
-    if (rows[ti]) rows[ti].classList.remove('playing');
-  });
+  speakText(text, 'en-US', () => { if (rows[ti]) rows[ti].classList.remove('playing'); });
 }
 
-  function speakTense3(text, vi, ti) {
-    if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-  
-    // Lógica visual para los botones
-    document.querySelectorAll('.tense-audio').forEach(b => b.classList.remove('playing'));
-    const rows = document.querySelectorAll('#vtenses-' + vi + ' .tense-audio');
-    if (rows[ti]) rows[ti].classList.add('playing');
-  
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = 'en-US';
-    utter.rate = 0.85;
-  
-    // OBTENER VOCES AQUÍ MISMO (Solución al error de referencia)
-    const availableVoices = window.speechSynthesis.getVoices();
-    
-    // Buscar la mejor voz en el momento
-    const match = availableVoices.find(v => v.lang === 'en-US' && v.name.includes('Google')) || 
-                  availableVoices.find(v => v.lang === 'en-US') || 
-                  availableVoices.find(v => v.lang.startsWith('en'));
-    
-    if (match) utter.voice = match;
-  
-    utter.onend = () => { if (rows[ti]) rows[ti].classList.remove('playing'); };
-    utter.onerror = () => { if (rows[ti]) rows[ti].classList.remove('playing'); };
-  
-    window.speechSynthesis.speak(utter);
-}
 
 function filterIrrVerbs() {
   const q = document.getElementById('irrverbs-search').value.trim().toLowerCase();
@@ -1868,26 +1894,140 @@ function filterIrrVerbs() {
 }
 
 
-function speakTense2(text) {
-  // 1. Cancelamos cualquier audio previo para evitar solapamientos
-  if (window.currentAudio) {
-    window.currentAudio.pause();
-  }
+buildIrrVerbsList(IRR_VERBS);
 
-  // 2. Usamos la URL de Google Translate TTS (es rápida y fluida)
-  const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=text&tl=en&client=tw-ob`;
-  
-  window.currentAudio = new Audio(url);
-  
-  // 3. Reproducción inmediata
-  window.currentAudio.play().catch(e => {
-    console.error("Error al reproducir audio fluido:", e);
-    // Si falla por restricciones del navegador, usamos el plan B (tu método actual)
-    fallbackSpeak(text);
-  });
+
+// ══════════════════════════════════════════════════════════════
+// REGULAR VERBS DATA
+// ══════════════════════════════════════════════════════════════
+const REG_VERBS = [
+  {base:"argue",past:"argued",participle:"argued",spanish:"discutir",ing:"arguing",s3:"argues",tenses:[["Present Simple","I argue / he argues"],["Present Continuous","I am arguing / she is arguing"],["Present Perfect","I have argued / he has argued"],["Pres. Perf. Continuous","I have been arguing"],["Past Simple","I argued"],["Past Continuous","I was arguing / they were arguing"],["Past Perfect","I had argued"],["Past Perf. Continuous","I had been arguing"],["Future Simple (will)","I will argue"],["Going to","I am going to argue"],["Future Continuous","I will be arguing"],["Future Perfect","I will have argued"]]},
+  {base:"ask",past:"asked",participle:"asked",spanish:"preguntar",ing:"asking",s3:"asks",tenses:[["Present Simple","I ask / he asks"],["Present Continuous","I am asking / she is asking"],["Present Perfect","I have asked / he has asked"],["Pres. Perf. Continuous","I have been asking"],["Past Simple","I asked"],["Past Continuous","I was asking / they were asking"],["Past Perfect","I had asked"],["Past Perf. Continuous","I had been asking"],["Future Simple (will)","I will ask"],["Going to","I am going to ask"],["Future Continuous","I will be asking"],["Future Perfect","I will have asked"]]},
+  {base:"believe",past:"believed",participle:"believed",spanish:"creer",ing:"believing",s3:"believes",tenses:[["Present Simple","I believe / he believes"],["Present Continuous","I am believing / she is believing"],["Present Perfect","I have believed / he has believed"],["Pres. Perf. Continuous","I have been believing"],["Past Simple","I believed"],["Past Continuous","I was believing / they were believing"],["Past Perfect","I had believed"],["Past Perf. Continuous","I had been believing"],["Future Simple (will)","I will believe"],["Going to","I am going to believe"],["Future Continuous","I will be believing"],["Future Perfect","I will have believed"]]},
+  {base:"call",past:"called",participle:"called",spanish:"llamar",ing:"calling",s3:"calls",tenses:[["Present Simple","I call / he calls"],["Present Continuous","I am calling / she is calling"],["Present Perfect","I have called / he has called"],["Pres. Perf. Continuous","I have been calling"],["Past Simple","I called"],["Past Continuous","I was calling / they were calling"],["Past Perfect","I had called"],["Past Perf. Continuous","I had been calling"],["Future Simple (will)","I will call"],["Going to","I am going to call"],["Future Continuous","I will be calling"],["Future Perfect","I will have called"]]},
+  {base:"change",past:"changed",participle:"changed",spanish:"cambiar",ing:"changing",s3:"changes",tenses:[["Present Simple","I change / he changes"],["Present Continuous","I am changing / she is changing"],["Present Perfect","I have changed / he has changed"],["Pres. Perf. Continuous","I have been changing"],["Past Simple","I changed"],["Past Continuous","I was changing / they were changing"],["Past Perfect","I had changed"],["Past Perf. Continuous","I had been changing"],["Future Simple (will)","I will change"],["Going to","I am going to change"],["Future Continuous","I will be changing"],["Future Perfect","I will have changed"]]},
+  {base:"clean",past:"cleaned",participle:"cleaned",spanish:"limpiar",ing:"cleaning",s3:"cleans",tenses:[["Present Simple","I clean / he cleans"],["Present Continuous","I am cleaning / she is cleaning"],["Present Perfect","I have cleaned / he has cleaned"],["Pres. Perf. Continuous","I have been cleaning"],["Past Simple","I cleaned"],["Past Continuous","I was cleaning / they were cleaning"],["Past Perfect","I had cleaned"],["Past Perf. Continuous","I had been cleaning"],["Future Simple (will)","I will clean"],["Going to","I am going to clean"],["Future Continuous","I will be cleaning"],["Future Perfect","I will have cleaned"]]},
+  {base:"climb",past:"climbed",participle:"climbed",spanish:"trepar",ing:"climbing",s3:"climbs",tenses:[["Present Simple","I climb / he climbs"],["Present Continuous","I am climbing / she is climbing"],["Present Perfect","I have climbed / he has climbed"],["Pres. Perf. Continuous","I have been climbing"],["Past Simple","I climbed"],["Past Continuous","I was climbing / they were climbing"],["Past Perfect","I had climbed"],["Past Perf. Continuous","I had been climbing"],["Future Simple (will)","I will climb"],["Going to","I am going to climb"],["Future Continuous","I will be climbing"],["Future Perfect","I will have climbed"]]},
+  {base:"continue",past:"continued",participle:"continued",spanish:"continuar",ing:"continuing",s3:"continues",tenses:[["Present Simple","I continue / he continues"],["Present Continuous","I am continuing / she is continuing"],["Present Perfect","I have continued / he has continued"],["Pres. Perf. Continuous","I have been continuing"],["Past Simple","I continued"],["Past Continuous","I was continuing / they were continuing"],["Past Perfect","I had continued"],["Past Perf. Continuous","I had been continuing"],["Future Simple (will)","I will continue"],["Going to","I am going to continue"],["Future Continuous","I will be continuing"],["Future Perfect","I will have continued"]]},
+  {base:"cook",past:"cooked",participle:"cooked",spanish:"cocinar",ing:"cooking",s3:"cooks",tenses:[["Present Simple","I cook / he cooks"],["Present Continuous","I am cooking / she is cooking"],["Present Perfect","I have cooked / he has cooked"],["Pres. Perf. Continuous","I have been cooking"],["Past Simple","I cooked"],["Past Continuous","I was cooking / they were cooking"],["Past Perfect","I had cooked"],["Past Perf. Continuous","I had been cooking"],["Future Simple (will)","I will cook"],["Going to","I am going to cook"],["Future Continuous","I will be cooking"],["Future Perfect","I will have cooked"]]},
+  {base:"cry",past:"cried",participle:"cried",spanish:"llorar/gritar",ing:"crying",s3:"cries",tenses:[["Present Simple","I cry / he cries"],["Present Continuous","I am crying / she is crying"],["Present Perfect","I have cried / he has cried"],["Pres. Perf. Continuous","I have been crying"],["Past Simple","I cried"],["Past Continuous","I was crying / they were crying"],["Past Perfect","I had cried"],["Past Perf. Continuous","I had been crying"],["Future Simple (will)","I will cry"],["Going to","I am going to cry"],["Future Continuous","I will be crying"],["Future Perfect","I will have cried"]]},
+  {base:"decide",past:"decided",participle:"decided",spanish:"decidir",ing:"deciding",s3:"decides",tenses:[["Present Simple","I decide / he decides"],["Present Continuous","I am deciding / she is deciding"],["Present Perfect","I have decided / he has decided"],["Pres. Perf. Continuous","I have been deciding"],["Past Simple","I decided"],["Past Continuous","I was deciding / they were deciding"],["Past Perfect","I had decided"],["Past Perf. Continuous","I had been deciding"],["Future Simple (will)","I will decide"],["Going to","I am going to decide"],["Future Continuous","I will be deciding"],["Future Perfect","I will have decided"]]},
+  {base:"die",past:"died",participle:"died",spanish:"morir",ing:"dying",s3:"dies",tenses:[["Present Simple","I die / he dies"],["Present Continuous","I am dying / she is dying"],["Present Perfect","I have died / he has died"],["Pres. Perf. Continuous","I have been dying"],["Past Simple","I died"],["Past Continuous","I was dying / they were dying"],["Past Perfect","I had died"],["Past Perf. Continuous","I had been dying"],["Future Simple (will)","I will die"],["Going to","I am going to die"],["Future Continuous","I will be dying"],["Future Perfect","I will have died"]]},
+  {base:"drop",past:"dropped",participle:"dropped",spanish:"caer",ing:"dropping",s3:"drops",tenses:[["Present Simple","I drop / he drops"],["Present Continuous","I am dropping / she is dropping"],["Present Perfect","I have dropped / he has dropped"],["Pres. Perf. Continuous","I have been dropping"],["Past Simple","I dropped"],["Past Continuous","I was dropping / they were dropping"],["Past Perfect","I had dropped"],["Past Perf. Continuous","I had been dropping"],["Future Simple (will)","I will drop"],["Going to","I am going to drop"],["Future Continuous","I will be dropping"],["Future Perfect","I will have dropped"]]},
+  {base:"dry",past:"dried",participle:"dried",spanish:"secar",ing:"drying",s3:"dries",tenses:[["Present Simple","I dry / he dries"],["Present Continuous","I am drying / she is drying"],["Present Perfect","I have dried / he has dried"],["Pres. Perf. Continuous","I have been drying"],["Past Simple","I dried"],["Past Continuous","I was drying / they were drying"],["Past Perfect","I had dried"],["Past Perf. Continuous","I had been drying"],["Future Simple (will)","I will dry"],["Going to","I am going to dry"],["Future Continuous","I will be drying"],["Future Perfect","I will have dried"]]},
+  {base:"enjoy",past:"enjoyed",participle:"enjoyed",spanish:"disfrutar",ing:"enjoying",s3:"enjoys",tenses:[["Present Simple","I enjoy / he enjoys"],["Present Continuous","I am enjoying / she is enjoying"],["Present Perfect","I have enjoyed / he has enjoyed"],["Pres. Perf. Continuous","I have been enjoying"],["Past Simple","I enjoyed"],["Past Continuous","I was enjoying / they were enjoying"],["Past Perfect","I had enjoyed"],["Past Perf. Continuous","I had been enjoying"],["Future Simple (will)","I will enjoy"],["Going to","I am going to enjoy"],["Future Continuous","I will be enjoying"],["Future Perfect","I will have enjoyed"]]},
+  {base:"finish",past:"finished",participle:"finished",spanish:"terminar",ing:"finishing",s3:"finishes",tenses:[["Present Simple","I finish / he finishes"],["Present Continuous","I am finishing / she is finishing"],["Present Perfect","I have finished / he has finished"],["Pres. Perf. Continuous","I have been finishing"],["Past Simple","I finished"],["Past Continuous","I was finishing / they were finishing"],["Past Perfect","I had finished"],["Past Perf. Continuous","I had been finishing"],["Future Simple (will)","I will finish"],["Going to","I am going to finish"],["Future Continuous","I will be finishing"],["Future Perfect","I will have finished"]]},
+  {base:"hate",past:"hated",participle:"hated",spanish:"odiar",ing:"hating",s3:"hates",tenses:[["Present Simple","I hate / he hates"],["Present Continuous","I am hating / she is hating"],["Present Perfect","I have hated / he has hated"],["Pres. Perf. Continuous","I have been hating"],["Past Simple","I hated"],["Past Continuous","I was hating / they were hating"],["Past Perfect","I had hated"],["Past Perf. Continuous","I had been hating"],["Future Simple (will)","I will hate"],["Going to","I am going to hate"],["Future Continuous","I will be hating"],["Future Perfect","I will have hated"]]},
+  {base:"help",past:"helped",participle:"helped",spanish:"ayudar",ing:"helping",s3:"helps",tenses:[["Present Simple","I help / he helps"],["Present Continuous","I am helping / she is helping"],["Present Perfect","I have helped / he has helped"],["Pres. Perf. Continuous","I have been helping"],["Past Simple","I helped"],["Past Continuous","I was helping / they were helping"],["Past Perfect","I had helped"],["Past Perf. Continuous","I had been helping"],["Future Simple (will)","I will help"],["Going to","I am going to help"],["Future Continuous","I will be helping"],["Future Perfect","I will have helped"]]},
+  {base:"invite",past:"invited",participle:"invited",spanish:"invitar",ing:"inviting",s3:"invites",tenses:[["Present Simple","I invite / he invites"],["Present Continuous","I am inviting / she is inviting"],["Present Perfect","I have invited / he has invited"],["Pres. Perf. Continuous","I have been inviting"],["Past Simple","I invited"],["Past Continuous","I was inviting / they were inviting"],["Past Perfect","I had invited"],["Past Perf. Continuous","I had been inviting"],["Future Simple (will)","I will invite"],["Going to","I am going to invite"],["Future Continuous","I will be inviting"],["Future Perfect","I will have invited"]]},
+  {base:"join",past:"joined",participle:"joined",spanish:"unir",ing:"joining",s3:"joins",tenses:[["Present Simple","I join / he joins"],["Present Continuous","I am joining / she is joining"],["Present Perfect","I have joined / he has joined"],["Pres. Perf. Continuous","I have been joining"],["Past Simple","I joined"],["Past Continuous","I was joining / they were joining"],["Past Perfect","I had joined"],["Past Perf. Continuous","I had been joining"],["Future Simple (will)","I will join"],["Going to","I am going to join"],["Future Continuous","I will be joining"],["Future Perfect","I will have joined"]]},
+  {base:"jump",past:"jumped",participle:"jumped",spanish:"saltar",ing:"jumping",s3:"jumps",tenses:[["Present Simple","I jump / he jumps"],["Present Continuous","I am jumping / she is jumping"],["Present Perfect","I have jumped / he has jumped"],["Pres. Perf. Continuous","I have been jumping"],["Past Simple","I jumped"],["Past Continuous","I was jumping / they were jumping"],["Past Perfect","I had jumped"],["Past Perf. Continuous","I had been jumping"],["Future Simple (will)","I will jump"],["Going to","I am going to jump"],["Future Continuous","I will be jumping"],["Future Perfect","I will have jumped"]]},
+  {base:"kick",past:"kicked",participle:"kicked",spanish:"patear",ing:"kicking",s3:"kicks",tenses:[["Present Simple","I kick / he kicks"],["Present Continuous","I am kicking / she is kicking"],["Present Perfect","I have kicked / he has kicked"],["Pres. Perf. Continuous","I have been kicking"],["Past Simple","I kicked"],["Past Continuous","I was kicking / they were kicking"],["Past Perfect","I had kicked"],["Past Perf. Continuous","I had been kicking"],["Future Simple (will)","I will kick"],["Going to","I am going to kick"],["Future Continuous","I will be kicking"],["Future Perfect","I will have kicked"]]},
+  {base:"kill",past:"killed",participle:"killed",spanish:"matar",ing:"killing",s3:"kills",tenses:[["Present Simple","I kill / he kills"],["Present Continuous","I am killing / she is killing"],["Present Perfect","I have killed / he has killed"],["Pres. Perf. Continuous","I have been killing"],["Past Simple","I killed"],["Past Continuous","I was killing / they were killing"],["Past Perfect","I had killed"],["Past Perf. Continuous","I had been killing"],["Future Simple (will)","I will kill"],["Going to","I am going to kill"],["Future Continuous","I will be killing"],["Future Perfect","I will have killed"]]},
+  {base:"kiss",past:"kissed",participle:"kissed",spanish:"besar",ing:"kissing",s3:"kisses",tenses:[["Present Simple","I kiss / he kisses"],["Present Continuous","I am kissing / she is kissing"],["Present Perfect","I have kissed / he has kissed"],["Pres. Perf. Continuous","I have been kissing"],["Past Simple","I kissed"],["Past Continuous","I was kissing / they were kissing"],["Past Perfect","I had kissed"],["Past Perf. Continuous","I had been kissing"],["Future Simple (will)","I will kiss"],["Going to","I am going to kiss"],["Future Continuous","I will be kissing"],["Future Perfect","I will have kissed"]]},
+  {base:"laugh",past:"laughed",participle:"laughed",spanish:"reír",ing:"laughing",s3:"laughs",tenses:[["Present Simple","I laugh / he laughs"],["Present Continuous","I am laughing / she is laughing"],["Present Perfect","I have laughed / he has laughed"],["Pres. Perf. Continuous","I have been laughing"],["Past Simple","I laughed"],["Past Continuous","I was laughing / they were laughing"],["Past Perfect","I had laughed"],["Past Perf. Continuous","I had been laughing"],["Future Simple (will)","I will laugh"],["Going to","I am going to laugh"],["Future Continuous","I will be laughing"],["Future Perfect","I will have laughed"]]},
+  {base:"learn",past:"learned",participle:"learned",spanish:"aprender",ing:"learning",s3:"learns",tenses:[["Present Simple","I learn / he learns"],["Present Continuous","I am learning / she is learning"],["Present Perfect","I have learned / he has learned"],["Pres. Perf. Continuous","I have been learning"],["Past Simple","I learned"],["Past Continuous","I was learning / they were learning"],["Past Perfect","I had learned"],["Past Perf. Continuous","I had been learning"],["Future Simple (will)","I will learn"],["Going to","I am going to learn"],["Future Continuous","I will be learning"],["Future Perfect","I will have learned"]]},
+  {base:"like",past:"liked",participle:"liked",spanish:"gustar",ing:"liking",s3:"likes",tenses:[["Present Simple","I like / he likes"],["Present Continuous","I am liking / she is liking"],["Present Perfect","I have liked / he has liked"],["Pres. Perf. Continuous","I have been liking"],["Past Simple","I liked"],["Past Continuous","I was liking / they were liking"],["Past Perfect","I had liked"],["Past Perf. Continuous","I had been liking"],["Future Simple (will)","I will like"],["Going to","I am going to like"],["Future Continuous","I will be liking"],["Future Perfect","I will have liked"]]},
+  {base:"live",past:"lived",participle:"lived",spanish:"vivir",ing:"living",s3:"lives",tenses:[["Present Simple","I live / he lives"],["Present Continuous","I am living / she is living"],["Present Perfect","I have lived / he has lived"],["Pres. Perf. Continuous","I have been living"],["Past Simple","I lived"],["Past Continuous","I was living / they were living"],["Past Perfect","I had lived"],["Past Perf. Continuous","I had been living"],["Future Simple (will)","I will live"],["Going to","I am going to live"],["Future Continuous","I will be living"],["Future Perfect","I will have lived"]]},
+  {base:"look",past:"looked",participle:"looked",spanish:"mirar",ing:"looking",s3:"looks",tenses:[["Present Simple","I look / he looks"],["Present Continuous","I am looking / she is looking"],["Present Perfect","I have looked / he has looked"],["Pres. Perf. Continuous","I have been looking"],["Past Simple","I looked"],["Past Continuous","I was looking / they were looking"],["Past Perfect","I had looked"],["Past Perf. Continuous","I had been looking"],["Future Simple (will)","I will look"],["Going to","I am going to look"],["Future Continuous","I will be looking"],["Future Perfect","I will have looked"]]},
+  {base:"love",past:"loved",participle:"loved",spanish:"amar",ing:"loving",s3:"loves",tenses:[["Present Simple","I love / he loves"],["Present Continuous","I am loving / she is loving"],["Present Perfect","I have loved / he has loved"],["Pres. Perf. Continuous","I have been loving"],["Past Simple","I loved"],["Past Continuous","I was loving / they were loving"],["Past Perfect","I had loved"],["Past Perf. Continuous","I had been loving"],["Future Simple (will)","I will love"],["Going to","I am going to love"],["Future Continuous","I will be loving"],["Future Perfect","I will have loved"]]},
+  {base:"marry",past:"married",participle:"married",spanish:"casar",ing:"marrying",s3:"marries",tenses:[["Present Simple","I marry / he marries"],["Present Continuous","I am marrying / she is marrying"],["Present Perfect","I have married / he has married"],["Pres. Perf. Continuous","I have been marrying"],["Past Simple","I married"],["Past Continuous","I was marrying / they were marrying"],["Past Perfect","I had married"],["Past Perf. Continuous","I had been marrying"],["Future Simple (will)","I will marry"],["Going to","I am going to marry"],["Future Continuous","I will be marrying"],["Future Perfect","I will have married"]]},
+  {base:"melt",past:"melted",participle:"melted",spanish:"derretir",ing:"melting",s3:"melts",tenses:[["Present Simple","I melt / he melts"],["Present Continuous","I am melting / she is melting"],["Present Perfect","I have melted / he has melted"],["Pres. Perf. Continuous","I have been melting"],["Past Simple","I melted"],["Past Continuous","I was melting / they were melting"],["Past Perfect","I had melted"],["Past Perf. Continuous","I had been melting"],["Future Simple (will)","I will melt"],["Going to","I am going to melt"],["Future Continuous","I will be melting"],["Future Perfect","I will have melted"]]},
+  {base:"miss",past:"missed",participle:"missed",spanish:"extrañar/errar",ing:"missing",s3:"misses",tenses:[["Present Simple","I miss / he misses"],["Present Continuous","I am missing / she is missing"],["Present Perfect","I have missed / he has missed"],["Pres. Perf. Continuous","I have been missing"],["Past Simple","I missed"],["Past Continuous","I was missing / they were missing"],["Past Perfect","I had missed"],["Past Perf. Continuous","I had been missing"],["Future Simple (will)","I will miss"],["Going to","I am going to miss"],["Future Continuous","I will be missing"],["Future Perfect","I will have missed"]]},
+  {base:"mix",past:"mixed",participle:"mixed",spanish:"mezclar",ing:"mixing",s3:"mixes",tenses:[["Present Simple","I mix / he mixes"],["Present Continuous","I am mixing / she is mixing"],["Present Perfect","I have mixed / he has mixed"],["Pres. Perf. Continuous","I have been mixing"],["Past Simple","I mixed"],["Past Continuous","I was mixing / they were mixing"],["Past Perfect","I had mixed"],["Past Perf. Continuous","I had been mixing"],["Future Simple (will)","I will mix"],["Going to","I am going to mix"],["Future Continuous","I will be mixing"],["Future Perfect","I will have mixed"]]},
+  {base:"move",past:"moved",participle:"moved",spanish:"mover",ing:"moving",s3:"moves",tenses:[["Present Simple","I move / he moves"],["Present Continuous","I am moving / she is moving"],["Present Perfect","I have moved / he has moved"],["Pres. Perf. Continuous","I have been moving"],["Past Simple","I moved"],["Past Continuous","I was moving / they were moving"],["Past Perfect","I had moved"],["Past Perf. Continuous","I had been moving"],["Future Simple (will)","I will move"],["Going to","I am going to move"],["Future Continuous","I will be moving"],["Future Perfect","I will have moved"]]},
+  {base:"need",past:"needed",participle:"needed",spanish:"necesitar",ing:"needing",s3:"needs",tenses:[["Present Simple","I need / he needs"],["Present Continuous","I am needing / she is needing"],["Present Perfect","I have needed / he has needed"],["Pres. Perf. Continuous","I have been needing"],["Past Simple","I needed"],["Past Continuous","I was needing / they were needing"],["Past Perfect","I had needed"],["Past Perf. Continuous","I had been needing"],["Future Simple (will)","I will need"],["Going to","I am going to need"],["Future Continuous","I will be needing"],["Future Perfect","I will have needed"]]},
+  {base:"open",past:"opened",participle:"opened",spanish:"abrir",ing:"opening",s3:"opens",tenses:[["Present Simple","I open / he opens"],["Present Continuous","I am opening / she is opening"],["Present Perfect","I have opened / he has opened"],["Pres. Perf. Continuous","I have been opening"],["Past Simple","I opened"],["Past Continuous","I was opening / they were opening"],["Past Perfect","I had opened"],["Past Perf. Continuous","I had been opening"],["Future Simple (will)","I will open"],["Going to","I am going to open"],["Future Continuous","I will be opening"],["Future Perfect","I will have opened"]]},
+  {base:"pass",past:"passed",participle:"passed",spanish:"pasar",ing:"passing",s3:"passes",tenses:[["Present Simple","I pass / he passes"],["Present Continuous","I am passing / she is passing"],["Present Perfect","I have passed / he has passed"],["Pres. Perf. Continuous","I have been passing"],["Past Simple","I passed"],["Past Continuous","I was passing / they were passing"],["Past Perfect","I had passed"],["Past Perf. Continuous","I had been passing"],["Future Simple (will)","I will pass"],["Going to","I am going to pass"],["Future Continuous","I will be passing"],["Future Perfect","I will have passed"]]},
+  {base:"play",past:"played",participle:"played",spanish:"jugar",ing:"playing",s3:"plays",tenses:[["Present Simple","I play / he plays"],["Present Continuous","I am playing / she is playing"],["Present Perfect","I have played / he has played"],["Pres. Perf. Continuous","I have been playing"],["Past Simple","I played"],["Past Continuous","I was playing / they were playing"],["Past Perfect","I had played"],["Past Perf. Continuous","I had been playing"],["Future Simple (will)","I will play"],["Going to","I am going to play"],["Future Continuous","I will be playing"],["Future Perfect","I will have played"]]},
+  {base:"promise",past:"promised",participle:"promised",spanish:"prometer",ing:"promising",s3:"promises",tenses:[["Present Simple","I promise / he promises"],["Present Continuous","I am promising / she is promising"],["Present Perfect","I have promised / he has promised"],["Pres. Perf. Continuous","I have been promising"],["Past Simple","I promised"],["Past Continuous","I was promising / they were promising"],["Past Perfect","I had promised"],["Past Perf. Continuous","I had been promising"],["Future Simple (will)","I will promise"],["Going to","I am going to promise"],["Future Continuous","I will be promising"],["Future Perfect","I will have promised"]]},
+  {base:"remember",past:"remembered",participle:"remembered",spanish:"recordar",ing:"remembering",s3:"remembers",tenses:[["Present Simple","I remember / he remembers"],["Present Continuous","I am remembering / she is remembering"],["Present Perfect","I have remembered / he has remembered"],["Pres. Perf. Continuous","I have been remembering"],["Past Simple","I remembered"],["Past Continuous","I was remembering / they were remembering"],["Past Perfect","I had remembered"],["Past Perf. Continuous","I had been remembering"],["Future Simple (will)","I will remember"],["Going to","I am going to remember"],["Future Continuous","I will be remembering"],["Future Perfect","I will have remembered"]]},
+  {base:"return",past:"returned",participle:"returned",spanish:"devolver",ing:"returning",s3:"returns",tenses:[["Present Simple","I return / he returns"],["Present Continuous","I am returning / she is returning"],["Present Perfect","I have returned / he has returned"],["Pres. Perf. Continuous","I have been returning"],["Past Simple","I returned"],["Past Continuous","I was returning / they were returning"],["Past Perfect","I had returned"],["Past Perf. Continuous","I had been returning"],["Future Simple (will)","I will return"],["Going to","I am going to return"],["Future Continuous","I will be returning"],["Future Perfect","I will have returned"]]},
+  {base:"seem",past:"seemed",participle:"seemed",spanish:"parecer",ing:"seeming",s3:"seems",tenses:[["Present Simple","I seem / he seems"],["Present Continuous","I am seeming / she is seeming"],["Present Perfect","I have seemed / he has seemed"],["Pres. Perf. Continuous","I have been seeming"],["Past Simple","I seemed"],["Past Continuous","I was seeming / they were seeming"],["Past Perfect","I had seemed"],["Past Perf. Continuous","I had been seeming"],["Future Simple (will)","I will seem"],["Going to","I am going to seem"],["Future Continuous","I will be seeming"],["Future Perfect","I will have seemed"]]},
+  {base:"shout",past:"shouted",participle:"shouted",spanish:"gritar",ing:"shouting",s3:"shouts",tenses:[["Present Simple","I shout / he shouts"],["Present Continuous","I am shouting / she is shouting"],["Present Perfect","I have shouted / he has shouted"],["Pres. Perf. Continuous","I have been shouting"],["Past Simple","I shouted"],["Past Continuous","I was shouting / they were shouting"],["Past Perfect","I had shouted"],["Past Perf. Continuous","I had been shouting"],["Future Simple (will)","I will shout"],["Going to","I am going to shout"],["Future Continuous","I will be shouting"],["Future Perfect","I will have shouted"]]},
+  {base:"smell",past:"smelled",participle:"smelled",spanish:"oler",ing:"smelling",s3:"smells",tenses:[["Present Simple","I smell / he smells"],["Present Continuous","I am smelling / she is smelling"],["Present Perfect","I have smelled / he has smelled"],["Pres. Perf. Continuous","I have been smelling"],["Past Simple","I smelled"],["Past Continuous","I was smelling / they were smelling"],["Past Perfect","I had smelled"],["Past Perf. Continuous","I had been smelling"],["Future Simple (will)","I will smell"],["Going to","I am going to smell"],["Future Continuous","I will be smelling"],["Future Perfect","I will have smelled"]]},
+  {base:"smile",past:"smiled",participle:"smiled",spanish:"sonreír",ing:"smiling",s3:"smiles",tenses:[["Present Simple","I smile / he smiles"],["Present Continuous","I am smiling / she is smiling"],["Present Perfect","I have smiled / he has smiled"],["Pres. Perf. Continuous","I have been smiling"],["Past Simple","I smiled"],["Past Continuous","I was smiling / they were smiling"],["Past Perfect","I had smiled"],["Past Perf. Continuous","I had been smiling"],["Future Simple (will)","I will smile"],["Going to","I am going to smile"],["Future Continuous","I will be smiling"],["Future Perfect","I will have smiled"]]},
+  {base:"spell",past:"spelled",participle:"spelled",spanish:"deletrear",ing:"spelling",s3:"spells",tenses:[["Present Simple","I spell / he spells"],["Present Continuous","I am spelling / she is spelling"],["Present Perfect","I have spelled / he has spelled"],["Pres. Perf. Continuous","I have been spelling"],["Past Simple","I spelled"],["Past Continuous","I was spelling / they were spelling"],["Past Perfect","I had spelled"],["Past Perf. Continuous","I had been spelling"],["Future Simple (will)","I will spell"],["Going to","I am going to spell"],["Future Continuous","I will be spelling"],["Future Perfect","I will have spelled"]]},
+  {base:"start",past:"started",participle:"started",spanish:"empezar",ing:"starting",s3:"starts",tenses:[["Present Simple","I start / he starts"],["Present Continuous","I am starting / she is starting"],["Present Perfect","I have started / he has started"],["Pres. Perf. Continuous","I have been starting"],["Past Simple","I started"],["Past Continuous","I was starting / they were starting"],["Past Perfect","I had started"],["Past Perf. Continuous","I had been starting"],["Future Simple (will)","I will start"],["Going to","I am going to start"],["Future Continuous","I will be starting"],["Future Perfect","I will have started"]]},
+  {base:"stay",past:"stayed",participle:"stayed",spanish:"quedar",ing:"staying",s3:"stays",tenses:[["Present Simple","I stay / he stays"],["Present Continuous","I am staying / she is staying"],["Present Perfect","I have stayed / he has stayed"],["Pres. Perf. Continuous","I have been staying"],["Past Simple","I stayed"],["Past Continuous","I was staying / they were staying"],["Past Perfect","I had stayed"],["Past Perf. Continuous","I had been staying"],["Future Simple (will)","I will stay"],["Going to","I am going to stay"],["Future Continuous","I will be staying"],["Future Perfect","I will have stayed"]]},
+  {base:"stop",past:"stopped",participle:"stopped",spanish:"parar",ing:"stopping",s3:"stops",tenses:[["Present Simple","I stop / he stops"],["Present Continuous","I am stopping / she is stopping"],["Present Perfect","I have stopped / he has stopped"],["Pres. Perf. Continuous","I have been stopping"],["Past Simple","I stopped"],["Past Continuous","I was stopping / they were stopping"],["Past Perfect","I had stopped"],["Past Perf. Continuous","I had been stopping"],["Future Simple (will)","I will stop"],["Going to","I am going to stop"],["Future Continuous","I will be stopping"],["Future Perfect","I will have stopped"]]},
+  {base:"study",past:"studied",participle:"studied",spanish:"estudiar",ing:"studying",s3:"studies",tenses:[["Present Simple","I study / he studies"],["Present Continuous","I am studying / she is studying"],["Present Perfect","I have studied / he has studied"],["Pres. Perf. Continuous","I have been studying"],["Past Simple","I studied"],["Past Continuous","I was studying / they were studying"],["Past Perfect","I had studied"],["Past Perf. Continuous","I had been studying"],["Future Simple (will)","I will study"],["Going to","I am going to study"],["Future Continuous","I will be studying"],["Future Perfect","I will have studied"]]},
+  {base:"talk",past:"talked",participle:"talked",spanish:"hablar",ing:"talking",s3:"talks",tenses:[["Present Simple","I talk / he talks"],["Present Continuous","I am talking / she is talking"],["Present Perfect","I have talked / he has talked"],["Pres. Perf. Continuous","I have been talking"],["Past Simple","I talked"],["Past Continuous","I was talking / they were talking"],["Past Perfect","I had talked"],["Past Perf. Continuous","I had been talking"],["Future Simple (will)","I will talk"],["Going to","I am going to talk"],["Future Continuous","I will be talking"],["Future Perfect","I will have talked"]]},
+  {base:"touch",past:"touched",participle:"touched",spanish:"tocar",ing:"touching",s3:"touches",tenses:[["Present Simple","I touch / he touches"],["Present Continuous","I am touching / she is touching"],["Present Perfect","I have touched / he has touched"],["Pres. Perf. Continuous","I have been touching"],["Past Simple","I touched"],["Past Continuous","I was touching / they were touching"],["Past Perfect","I had touched"],["Past Perf. Continuous","I had been touching"],["Future Simple (will)","I will touch"],["Going to","I am going to touch"],["Future Continuous","I will be touching"],["Future Perfect","I will have touched"]]},
+  {base:"travel",past:"traveled",participle:"traveled",spanish:"viajar",ing:"traveling",s3:"travels",tenses:[["Present Simple","I travel / he travels"],["Present Continuous","I am traveling / she is traveling"],["Present Perfect","I have traveled / he has traveled"],["Pres. Perf. Continuous","I have been traveling"],["Past Simple","I traveled"],["Past Continuous","I was traveling / they were traveling"],["Past Perfect","I had traveled"],["Past Perf. Continuous","I had been traveling"],["Future Simple (will)","I will travel"],["Going to","I am going to travel"],["Future Continuous","I will be traveling"],["Future Perfect","I will have traveled"]]},
+  {base:"try",past:"tried",participle:"tried",spanish:"probar",ing:"trying",s3:"tries",tenses:[["Present Simple","I try / he tries"],["Present Continuous","I am trying / she is trying"],["Present Perfect","I have tried / he has tried"],["Pres. Perf. Continuous","I have been trying"],["Past Simple","I tried"],["Past Continuous","I was trying / they were trying"],["Past Perfect","I had tried"],["Past Perf. Continuous","I had been trying"],["Future Simple (will)","I will try"],["Going to","I am going to try"],["Future Continuous","I will be trying"],["Future Perfect","I will have tried"]]},
+  {base:"turn",past:"turned",participle:"turned",spanish:"girar",ing:"turning",s3:"turns",tenses:[["Present Simple","I turn / he turns"],["Present Continuous","I am turning / she is turning"],["Present Perfect","I have turned / he has turned"],["Pres. Perf. Continuous","I have been turning"],["Past Simple","I turned"],["Past Continuous","I was turning / they were turning"],["Past Perfect","I had turned"],["Past Perf. Continuous","I had been turning"],["Future Simple (will)","I will turn"],["Going to","I am going to turn"],["Future Continuous","I will be turning"],["Future Perfect","I will have turned"]]},
+  {base:"use",past:"used",participle:"used",spanish:"usar",ing:"using",s3:"uses",tenses:[["Present Simple","I use / he uses"],["Present Continuous","I am using / she is using"],["Present Perfect","I have used / he has used"],["Pres. Perf. Continuous","I have been using"],["Past Simple","I used"],["Past Continuous","I was using / they were using"],["Past Perfect","I had used"],["Past Perf. Continuous","I had been using"],["Future Simple (will)","I will use"],["Going to","I am going to use"],["Future Continuous","I will be using"],["Future Perfect","I will have used"]]},
+  {base:"want",past:"wanted",participle:"wanted",spanish:"querer",ing:"wanting",s3:"wants",tenses:[["Present Simple","I want / he wants"],["Present Continuous","I am wanting / she is wanting"],["Present Perfect","I have wanted / he has wanted"],["Pres. Perf. Continuous","I have been wanting"],["Past Simple","I wanted"],["Past Continuous","I was wanting / they were wanting"],["Past Perfect","I had wanted"],["Past Perf. Continuous","I had been wanting"],["Future Simple (will)","I will want"],["Going to","I am going to want"],["Future Continuous","I will be wanting"],["Future Perfect","I will have wanted"]]},
+  {base:"watch",past:"watched",participle:"watched",spanish:"ver",ing:"watching",s3:"watches",tenses:[["Present Simple","I watch / he watches"],["Present Continuous","I am watching / she is watching"],["Present Perfect","I have watched / he has watched"],["Pres. Perf. Continuous","I have been watching"],["Past Simple","I watched"],["Past Continuous","I was watching / they were watching"],["Past Perfect","I had watched"],["Past Perf. Continuous","I had been watching"],["Future Simple (will)","I will watch"],["Going to","I am going to watch"],["Future Continuous","I will be watching"],["Future Perfect","I will have watched"]]},
+  {base:"wish",past:"wished",participle:"wished",spanish:"desear",ing:"wishing",s3:"wishes",tenses:[["Present Simple","I wish / he wishes"],["Present Continuous","I am wishing / she is wishing"],["Present Perfect","I have wished / he has wished"],["Pres. Perf. Continuous","I have been wishing"],["Past Simple","I wished"],["Past Continuous","I was wishing / they were wishing"],["Past Perfect","I had wished"],["Past Perf. Continuous","I had been wishing"],["Future Simple (will)","I will wish"],["Going to","I am going to wish"],["Future Continuous","I will be wishing"],["Future Perfect","I will have wished"]]},
+  {base:"work",past:"worked",participle:"worked",spanish:"trabajar",ing:"working",s3:"works",tenses:[["Present Simple","I work / he works"],["Present Continuous","I am working / she is working"],["Present Perfect","I have worked / he has worked"],["Pres. Perf. Continuous","I have been working"],["Past Simple","I worked"],["Past Continuous","I was working / they were working"],["Past Perfect","I had worked"],["Past Perf. Continuous","I had been working"],["Future Simple (will)","I will work"],["Going to","I am going to work"],["Future Continuous","I will be working"],["Future Perfect","I will have worked"]]},
+];
+
+let filteredRegVerbs = [...REG_VERBS];
+
+function buildRegVerbsList(list) {
+  const container = document.getElementById('regverbs-list');
+  document.getElementById('regverbs-count').textContent = `${list.length} verb${list.length !== 1 ? 's' : ''}`;
+  if (!list.length) {
+    container.innerHTML = '<div class="no-results">No verbs found.</div>';
+    return;
+  }
+  container.innerHTML = list.map((v, i) => `
+    <div class="vcard" id="rvcard-${i}">
+      <button class="vcard-header" onclick="toggleRegVerb(${i})">
+        <div class="vcard-main">
+          <span class="vcard-base">${v.base}</span>
+          <div class="vcard-forms">
+            <span class="vcard-form">${v.past}</span>
+            <span class="vcard-form">${v.participle}</span>
+            <span class="vcard-form">${v.ing}</span>
+          </div>
+          <span class="vcard-es">${v.spanish}</span>
+        </div>
+        <span class="vcard-toggle" id="rvtoggle-${i}">▸ Show tenses</span>
+      </button>
+      <div class="vcard-tenses" id="rvtenses-${i}">
+        ${v.tenses.map((t, ti) => `
+          <div class="tense-row">
+            <span class="tense-name">${t[0]}</span>
+            <span class="tense-form">${t[1]}</span>
+            <button class="tense-audio" onclick="speakRegTense('${t[1].replace(/'/g,"\'")}', ${i}, ${ti})">
+              🔊 Listen
+            </button>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
 }
 
-buildIrrVerbsList(IRR_VERBS);
+function toggleRegVerb(i) {
+  const tenses = document.getElementById('rvtenses-' + i);
+  const toggle = document.getElementById('rvtoggle-' + i);
+  const isOpen = tenses.classList.contains('open');
+  tenses.classList.toggle('open', !isOpen);
+  toggle.textContent = isOpen ? '▸ Show tenses' : '▾ Hide tenses';
+}
+
+function speakRegTense(text, vi, ti) {
+  document.querySelectorAll('.tense-audio').forEach(b => b.classList.remove('playing'));
+  const rows = document.querySelectorAll('#rvtenses-' + vi + ' .tense-audio');
+  if (rows[ti]) rows[ti].classList.add('playing');
+  speakText(text, 'en-US', () => { if (rows[ti]) rows[ti].classList.remove('playing'); });
+}
+
+function filterRegVerbs() {
+  const q = document.getElementById('regverbs-search').value.trim().toLowerCase();
+  filteredRegVerbs = q
+    ? REG_VERBS.filter(v =>
+        v.base.toLowerCase().includes(q) ||
+        v.spanish.toLowerCase().includes(q) ||
+        v.past.toLowerCase().includes(q) ||
+        v.participle.toLowerCase().includes(q))
+    : [...REG_VERBS];
+  buildRegVerbsList(filteredRegVerbs);
+}
+
+buildRegVerbsList(REG_VERBS);
 
 </script>
 </body>
