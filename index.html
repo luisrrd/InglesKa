@@ -1781,7 +1781,7 @@ function toggleVerb(i) {
   toggle.textContent = isOpen ? '▸ Show tenses' : '▾ Hide tenses';
 }
 
-function speakTense3(text, vi, ti) {
+function speakTense(text, vi, ti) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   document.querySelectorAll('.tense-audio').forEach(b => b.classList.remove('playing'));
@@ -1828,7 +1828,7 @@ function speakTense4(text, vi, ti) {
   });
 }
 
-  function speakTense(text, vi, ti) {
+  function speakTense3(text, vi, ti) {
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
   
