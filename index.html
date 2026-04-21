@@ -1237,7 +1237,8 @@ function speakWord(text, lang, idx, type) {
   const btn = document.getElementById(btnId);
   if (btn) btn.classList.add('playing');
 
-  const utter = new SpeechSynthesisUtterance(text);
+  const cleanText = text.replace(/\//g, ' ')
+  const utter = new SpeechSynthesisUtterance(cleanText);
   utter.lang = lang;
   utter.rate = 0.85;
   utter.pitch = 1;
@@ -1789,7 +1790,8 @@ function speakTense(text, vi, ti) {
   // find the button by proximity
   const rows = document.querySelectorAll('#vtenses-' + vi + ' .tense-audio');
   if (rows[ti]) rows[ti].classList.add('playing');
-  const utter = new SpeechSynthesisUtterance(text);
+  const cleanText = text.replace(/\//g, ' ')
+  const utter = new SpeechSynthesisUtterance(cleanText);
   utter.lang = 'en-US';
   utter.rate = 0.85;
   const voices = window.speechSynthesis.getVoices();
